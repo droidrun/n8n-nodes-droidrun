@@ -1,19 +1,24 @@
 {
   "name": "n8n-nodes-droidrun",
-  "version": "1.0.2",
-  "description": "",
+  "version": "1.0.3",
+  "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
     "n8n-community-node-package",
     "n8n-community-droidrun"
   ],
-  "license": "MIT",
+  "license": "MIT",  
   "homepage": "https://droidrun.ai/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/droidrun-ai/n8n-nodes-droidrun.git"
   },
   "engines": {
     "node": ">=20.15"
+  },
+  "author": {
+    "name": "Lukas Ließmann",
+    "email": "lukas@droidrun.ai",
+    "url": "https://droidrun.ai/"
   },
   "main": "index.js",
   "scripts": {
