@@ -1,12 +1,23 @@
 {
-  "name": "n8n-nodes-droidrun",
+  "name": "@droidrun/n8n-nodes-droidrun",
   "version": "1.0.3",
   "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
     "n8n-community-node-package",
-    "n8n-community-droidrun"
+    "n8n-community",
+    "n8n-node",
+    "n8n-integration",
+    "workflow-automation",
+    "automation",
+    "ai",
+    "droidrun",
+    "droidrun-ai",
+    "api-integration",
+    "http-api",
+    "low-code",
+    "no-code"
   ],
-  "license": "MIT",  
+  "license": "MIT",
   "homepage": "https://droidrun.ai/",
   "repository": {
     "type": "git",
