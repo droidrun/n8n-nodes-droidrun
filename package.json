@@ -21,7 +21,7 @@
   "homepage": "https://droidrun.ai/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/droidrun-ai/n8n-nodes-droidrun.git"
+    "url": "git+https://github.com/droidrun-ai/n8n-nodes-droidrun.git"
   },
   "engines": {
     "node": ">=20.15"
