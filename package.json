@@ -1,6 +1,6 @@
 {
-  "name": "@droidrun/n8n-nodes-droidrun",
-  "version": "1.0.5",
+  "name": "@mobilerun/n8n-nodes-mobilerun",
+  "version": "1.0.6",
   "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
     "n8n-community-node-package",
@@ -12,13 +12,15 @@
     "ai",
     "droidrun",
     "droidrun-ai",
+    "mobilerun-ai",
+    "mobilerun",
     "api-integration",
     "http-api",
     "low-code",
     "no-code"
   ],
   "license": "MIT",
-  "homepage": "https://droidrun.ai/",
+  "homepage": "https://mobilerun.ai/",
   "repository": {
     "type": "git",
     "url": "https://github.com/droidrun/n8n-nodes-droidrun"
@@ -46,10 +48,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/DroidrunApi.credentials.js"
+      "dist/credentials/MobilerunApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Droidrun/Droidrun.node.js"
+      "dist/nodes/Mobilerun/Mobilerun.node.js"
     ]
   },
   "devDependencies": {

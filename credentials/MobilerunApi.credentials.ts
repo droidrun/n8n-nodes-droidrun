@@ -5,9 +5,9 @@ import {
     INodeProperties,
 } from 'n8n-workflow';
 
-export class DroidrunApi implements ICredentialType {
-    name = 'droidrunApi';
-    displayName = 'Droidrun API';
+export class MobilerunApi implements ICredentialType {
+    name = 'mobilerunApi';
+    displayName = 'Mobilerun API';
     documentationUrl = 'https://docs.droidrun.ai/api-reference/';
     properties: INodeProperties[] = [
         {
@@ -19,7 +19,7 @@ export class DroidrunApi implements ICredentialType {
                 password: true,
             },
             required: true,
-            description: 'Your Droidrun Api Key',
+            description: 'Your Mobilerun Api Key',
         }
     ];
 
@@ -38,7 +38,7 @@ export class DroidrunApi implements ICredentialType {
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://api.droidrun.ai/v1',
+            baseURL: 'https://api.mobilerun.ai/v1',
             url: '/tasks/',
         },
     };

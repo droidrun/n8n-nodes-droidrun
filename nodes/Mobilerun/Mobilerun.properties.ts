@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-export const DroidrunResources = (): INodeProperties[] => {
+export const MobilerunResources = (): INodeProperties[] => {
     return [
         {
             displayName: 'Resource',

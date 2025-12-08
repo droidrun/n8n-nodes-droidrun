@@ -1,29 +1,29 @@
 import { INodeType, INodeTypeDescription, NodeConnectionTypes } from 'n8n-workflow';
-import { DroidrunResources } from './Droidrun.properties';
+import { MobilerunResources } from './Mobilerun.properties';
 
-export class Droidrun implements INodeType {
+export class Mobilerun implements INodeType {
     description: INodeTypeDescription = {
-        displayName: 'Droidrun Tasks',
-        name: 'droidrun',
+        displayName: 'Mobilerun Tasks',
+        name: 'mobilerun',
         group: ['transform'],
         version: 1,
         icon: 'file:droidrun-logo.svg',
         subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-        description: 'Access the Droidrun Cloud Api',
+        description: 'Access the Mobilerun Cloud Api',
         defaults: {
-            name: 'Droidrun',
+            name: 'Mobilerun',
         },
         inputs: [NodeConnectionTypes.Main],
         outputs: [NodeConnectionTypes.Main],
         usableAsTool: true,
         credentials: [
             {
-                name: 'droidrunApi',
+                name: 'mobilerunApi',
                 required: true,
             },
         ],
         requestDefaults: {
-            baseURL: 'https://api.droidrun.ai/v1',
+            baseURL: 'https://api.mobilerun.ai/v1',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -31,7 +31,7 @@ export class Droidrun implements INodeType {
         },
 
         properties: [
-            ...DroidrunResources()
+            ...MobilerunResources()
             // Optional/additional fields will go here
 
         ]
