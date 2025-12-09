@@ -36,7 +36,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npx rimraf dist && tsc && gulp build:icons",
-    "dev": "tsc --watch",
+    "dev": "n8n-node dev",
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
@@ -56,6 +56,7 @@
   },
   "devDependencies": {
     "@typescript-eslint/parser": "~8.32.0",
+    "@n8n/node-cli": "*",
     "eslint": "^8.57.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.3",
     "gulp": "^5.0.0",
