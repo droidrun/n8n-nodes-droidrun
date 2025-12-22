@@ -51,7 +51,8 @@
       "dist/credentials/MobilerunApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Mobilerun/Mobilerun.node.js"
+      "dist/nodes/Mobilerun/Mobilerun.node.js",
+      "dist/nodes/Mobilerun/MobilerunTrigger.node.js"
     ]
   },
   "devDependencies": {

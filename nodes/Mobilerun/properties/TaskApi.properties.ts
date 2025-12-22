@@ -44,7 +44,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/screenshot" }}',
+							url: '={{ "/tasks/" + $parameter.taskId + "/screenshots/" +  $parameter.index }}',
 						},
 					},
 				},
@@ -105,8 +105,8 @@ export const TaskResources = (): INodeProperties[] => {
 					action: 'Stop task',
 					routing: {
 						request: {
-							method: 'POST',
-							url: '={{ "/tasks/" + $parameter.taskId + "/cancel" }}',
+							method: 'DELETE',
+							url: '={{ "/tasks/" + $parameter.taskId }}',
 						},
 					},
 				},
@@ -128,9 +128,10 @@ export const TaskResources = (): INodeProperties[] => {
 								reflection: '={{ $parameter.reflection }}',
 								vision: '={{ $parameter.vision }}',
 								timeout: '={{ $parameter.timeout }}',
-								libraryApps: '={{ $parameter.libraryApps }}',
-								uploadedApps: '={{ $parameter.uploadedApps }}',
+								apps: '={{ $parameter.apps }}',
 								files: '={{ $parameter.files }}',
+								deviceId: '={{ $parameter.deviceId }}',
+								outputSchema: '={{ $parameter.outputSchema }}',
 							},
 						},
 					},
@@ -157,6 +158,21 @@ export const TaskResources = (): INodeProperties[] => {
 			},
 		},
 
+		{
+			displayName: 'Index',
+			name: 'index',
+			type: 'string',
+			default: '',
+			required: true,
+			description: 'Index to query',
+			placeholder: 'Enter Index',
+			displayOptions: {
+				show: {
+					operation: ['getTaskScreenshot'],
+				},
+			},
+		},
+
 		/*
 				MANAGE TASK PROPERTIES
 		*/
@@ -179,23 +195,15 @@ export const TaskResources = (): INodeProperties[] => {
 		},
 
 		{
-			displayName: 'LLM Model',
+			displayName: 'LLM Model Name or ID',
 			name: 'llmModel',
 			type: 'options',
-			options: [
-				{ name: 'claude-3-7-sonnet-latest', value: 'claude-3-7-sonnet-latest' },
-				{ name: 'claude-sonnet-4-20250514', value: 'claude-sonnet-4-20250514' },
-				{ name: 'gemini-2.5-flash', value: 'gemini-2.5-flash' },
-				{ name: 'gemini-2.5-pro', value: 'gemini-2.5-pro' },
-				{ name: 'gpt-4.1', value: 'gpt-4.1' },
-				{ name: 'gpt-4.1-mini', value: 'gpt-4.1-mini' },
-				{ name: 'gpt-4o', value: 'gpt-4o' },
-				{ name: 'gpt-4o-mini', value: 'gpt-4o-mini' },
-				{ name: 'gpt-o3', value: 'gpt-o3' },
-				{ name: 'gpt-o4-mini', value: 'gpt-o4-mini' },
-			],
-			default: 'gpt-4o',
-			description: 'The LLM model to use',
+			options: [],
+			default: '',
+			description: 'The LLM model to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			typeOptions: {
+				loadOptionsMethod: 'loadLlmModels',
+			},
 			displayOptions: { show: { operation: ['runTask'] } },
 		},
 
@@ -257,22 +265,36 @@ export const TaskResources = (): INodeProperties[] => {
 		},
 
 		{
-			displayName: 'Library Apps',
-			name: 'libraryApps',
-			type: 'string',
-			typeOptions: { multipleValues: true },
-			default: [],
-			description: 'List of library apps',
+			displayName: 'Device Name or ID',
+			name: 'deviceId',
+			type: 'options',
+			default: '',
+			description: 'Optional device to run the task on. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			typeOptions: {
+				loadOptionsMethod: 'loadDevices',
+			},
 			displayOptions: { show: { operation: ['runTask'] } },
 		},
 
 		{
-			displayName: 'Uploaded Apps',
-			name: 'uploadedApps',
-			type: 'string',
-			typeOptions: { multipleValues: true },
+			displayName: 'Output Schema',
+			name: 'outputSchema',
+			type: 'json',
+			default: '',
+			typeOptions: { isAdvanced: true },
+			description: 'JSON schema for structured output (optional)',
+			displayOptions: { show: { operation: ['runTask'] } },
+		},
+
+		{
+			displayName: 'App Names or IDs',
+			name: 'apps',
+			type: 'multiOptions',
+			typeOptions: {
+				loadOptionsMethod: 'loadApps',
+			},
 			default: [],
-			description: 'List of uploaded apps',
+			description: 'List of apps to use. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			displayOptions: { show: { operation: ['runTask'] } },
 		},
 
@@ -280,7 +302,7 @@ export const TaskResources = (): INodeProperties[] => {
 			displayName: 'Files',
 			name: 'files',
 			type: 'string',
-			typeOptions: { multipleValues: true },
+			typeOptions: { multipleValues: true, isAdvanced: true },
 			default: [],
 			description: 'List of files',
 			displayOptions: { show: { operation: ['runTask'] } },
