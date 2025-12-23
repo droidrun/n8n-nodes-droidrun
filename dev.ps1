@@ -1,0 +1,1 @@
+$env:WEBHOOK_URL = " https://4768e91ffc2c.ngrok-free.app/"; $env:CODE_ENABLE_STDOUT="true"; $env:N8N_LOG_OUTPUT="console,file"; $env:N8N_LOG_FILE_LOCATION="./n8n.log"; $env:N8N_LOG_LEVEL="debug"; pnpm dev
