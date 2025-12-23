@@ -30,6 +30,11 @@ This node exposes the following resources and operations:
 
 - Manage Task
   - Run Task
+    - Supports LLM model selection (fetched from LiteLLM endpoint)
+    - Optional device selection (fetched from API or manual entry)
+    - Apps selection (fetched from API for dropdown)
+    - Structured output support via JSON schema
+    - Optional file attachments
   - Stop Task
 
 ## Credentials
