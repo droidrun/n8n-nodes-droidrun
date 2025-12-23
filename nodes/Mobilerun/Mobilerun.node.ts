@@ -59,16 +59,13 @@ export class Mobilerun implements INodeType {
 				} catch (error) {
 					// Fallback to hardcoded
 					return [
-						{ name: 'claude-3-7-sonnet-latest', value: 'claude-3-7-sonnet-latest' },
-						{ name: 'claude-sonnet-4-20250514', value: 'claude-sonnet-4-20250514' },
-						{ name: 'gemini-2.5-flash', value: 'gemini-2.5-flash' },
-						{ name: 'gemini-2.5-pro', value: 'gemini-2.5-pro' },
-						{ name: 'gpt-4.1', value: 'gpt-4.1' },
-						{ name: 'gpt-4.1-mini', value: 'gpt-4.1-mini' },
-						{ name: 'gpt-4o', value: 'gpt-4o' },
-						{ name: 'gpt-4o-mini', value: 'gpt-4o-mini' },
-						{ name: 'gpt-o3', value: 'gpt-o3' },
-						{ name: 'gpt-o4-mini', value: 'gpt-o4-mini' },
+						{ name: 'OpenAI GPT-5', value: 'openai/gpt-5' },
+						{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
+						{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
+						{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
+						{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
+						{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
+						{ name: 'MoonshotAI Kimi K2', value: 'moonshotai/kimi-k2' },
 					];
 				}
 			},
@@ -113,13 +110,27 @@ export class Mobilerun implements INodeType {
 
 					const apps = response?.body?.apps || [];
 					return apps.map((app) => ({
-						name: app.displayName || app.packageName,
+						name: `${app.displayName || app.packageName} (${app.source || 'unknown'})`,
 						value: app.packageName,
 					}));
 				} catch (error) {
 					// Return empty if API fails - user can enter manually
 					return [];
 				}
+			},
+
+			async loadVpnCountries(this: ILoadOptionsFunctions) {
+				return [
+					{ name: 'None', value: 'none' },
+					{ name: 'United States', value: 'US' },
+					{ name: 'Brazil', value: 'BR' },
+					{ name: 'France', value: 'FR' },
+					{ name: 'Germany', value: 'DE' },
+					{ name: 'India', value: 'IN' },
+					{ name: 'Japan', value: 'JP' },
+					{ name: 'South Korea', value: 'KR' },
+					{ name: 'South Africa', value: 'ZA' },
+				];
 			},
 		},
 	};
