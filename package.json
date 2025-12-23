@@ -1,5 +1,5 @@
 {
-  "name": "@mobilerun/n8n-nodes-mobilerun",
+  "name": "@droidrun/n8n-nodes-droidrun",
   "version": "1.0.6",
   "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
