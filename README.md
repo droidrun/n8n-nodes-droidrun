@@ -45,7 +45,7 @@ This node requires a Droidrun API Token.
 - In n8n, create new credentials of type `Droidrun API` and paste your token.
 - The token will be sent as `Authorization: Bearer <token>` to the Droidrun API.
 
-Reference: `https://docs.droidrun.ai/api-reference/`
+Reference: `https://docs.mobilerun.ai/api-reference/`
 
 ## Compatibility
 
@@ -62,7 +62,7 @@ Reference: `https://docs.droidrun.ai/api-reference/`
 ## Resources
 
 - n8n community nodes docs: `https://docs.n8n.io/integrations/#community-nodes`
-- Droidrun API reference: `https://docs.droidrun.ai/api-reference/`
+- Droidrun API reference: `https://docs.mobilerun.ai/api-reference/`
 - Droidrun website: `https://droidrun.ai/`
 
 ## Version history

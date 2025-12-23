@@ -8,7 +8,7 @@ import {
 export class MobilerunApi implements ICredentialType {
 	name = 'mobilerunApi';
 	displayName = 'Mobilerun API';
-	documentationUrl = 'https://docs.droidrun.ai/api-reference/';
+	documentationUrl = 'https://docs.mobilerun.ai/api-reference';
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Token',
