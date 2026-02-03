@@ -1,5 +1,5 @@
 import { MobilerunResources } from './Mobilerun.properties';
-import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions, ApplicationError } from 'n8n-workflow';
 import { version } from '../../package.json';
 
 export class Mobilerun implements INodeType {
@@ -38,37 +38,41 @@ export class Mobilerun implements INodeType {
 	};
 
 	methods = {
+		/*
+		// API Currently not exposed
+*/
 		loadOptions: {
-			async loadLlmModels(this: ILoadOptionsFunctions) {
-				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(
-						this,
-						'mobilerunApi',
-						{
-							method: 'GET',
-							url: 'https://litellm.droidrun.ai/v1/models',
-							returnFullResponse: true,
-						},
-					) as { body?: { data?: Array<{ id: string; object: string }> } };
+			/*
+				async loadLlmModels(this: ILoadOptionsFunctions) {
+					try {
+						const response = await this.helpers.httpRequestWithAuthentication.call(
+							this,
+							'mobilerunApi',
+							{
+								method: 'GET',
+								url: 'https://litellm.droidrun.ai/v1/models',
+								returnFullResponse: true,
+							},
+						) as { body?: { data?: Array<{ id: string; object: string }> } };
 
-					const models = response?.body?.data || [];
-					return models.map((model) => ({
-						name: model.id,
-						value: model.id,
-					}));
-				} catch (error) {
-					// Fallback to hardcoded
-					return [
-						{ name: 'OpenAI GPT-5', value: 'openai/gpt-5' },
-						{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
-						{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
-						{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
-						{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
-						{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
-						{ name: 'MoonshotAI Kimi K2', value: 'moonshotai/kimi-k2' },
-					];
-				}
-			},
+						const models = response?.body?.data || [];
+						return models.map((model) => ({
+							name: model.id,
+							value: model.id,
+						}));
+					} catch (error) {
+						// Fallback to hardcoded
+						return [
+							{ name: 'OpenAI GPT-5', value: 'openai/gpt-5' },
+							{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
+							{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
+							{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
+							{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
+							{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
+							{ name: 'MoonshotAI Kimi K2', value: 'moonshotai/kimi-k2' },
+						];
+					}
+				}, */
 
 			async loadDevices(this: ILoadOptionsFunctions) {
 				try {
@@ -88,7 +92,7 @@ export class Mobilerun implements INodeType {
 						value: device.id,
 					}));
 					// Add empty option for no device selection
-					options.unshift({ name: 'Auto-Select Device', value: '' });
+					//options.unshift({ name: 'Auto-Select Device', value: '' });
 					return options;
 				} catch (error) {
 					// Return empty option if API fails
@@ -106,15 +110,16 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/apps',
 							returnFullResponse: true,
 						},
-					) as { body?: { apps?: Array<{ packageName: string; displayName?: string; source?: string }> } };
+					) as { body?: { items?: Array<{ packageName: string; displayName?: string; source?: string }> } };
 
-					const apps = response?.body?.apps || [];
+					const apps = response?.body?.items || [];
 					return apps.map((app) => ({
 						name: `${app.displayName || app.packageName} (${app.source || 'unknown'})`,
 						value: app.packageName,
 					}));
 				} catch (error) {
 					// Return empty if API fails - user can enter manually
+					throw new ApplicationError(error)
 					return [];
 				}
 			},
@@ -132,7 +137,7 @@ export class Mobilerun implements INodeType {
 					{ name: 'South Africa', value: 'ZA' },
 				];
 			},
-		},
+		}
 	};
 }
 
