@@ -1,6 +1,6 @@
 {
   "name": "@droidrun/n8n-nodes-droidrun",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
     "n8n-community-node-package",
