@@ -39,7 +39,7 @@ const taskProperties: INodeProperties[] = [{
 	default: {},
 	options: [
 		{
-			displayName: 'Apps',
+			displayName: 'App Names or IDs',
 			name: 'apps',
 			type: 'multiOptions',
 			allowArbitraryValues: true,
@@ -49,7 +49,7 @@ const taskProperties: INodeProperties[] = [{
 			},
 			default: [],
 			placeholder: 'Choose App',
-			description: 'Apps configuration',
+			description: 'Apps configuration. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			hint: 'For manuall app selection use n8n expressions'
 		},
 		{
@@ -91,7 +91,7 @@ const taskProperties: INodeProperties[] = [{
 			description: 'Package credentials configuration',
 		},
 		{
-			displayName: 'Device ID',
+			displayName: 'Device Name or ID',
 			name: 'deviceId',
 			placeholder: 'Choose Device',
 			type: 'options',
@@ -100,8 +100,7 @@ const taskProperties: INodeProperties[] = [{
 				loadOptionsMethod: 'loadDevices'
 			},
 			default: '',
-			required: false,
-			description: 'Device configuration',
+			description: 'Device configuration. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			hint: 'for manuall device selection use n8n expressions'
 		},
 		{
@@ -134,6 +133,17 @@ const taskProperties: INodeProperties[] = [{
 			type: 'number',
 			default: 100,
 			description: 'Maximum number of steps for task execution',
+		},
+		{
+			displayName: 'Output Schema',
+			name: 'outputSchema',
+			type: 'json',
+			typeOptions: {
+				rows: 10,
+			},
+			default: '{\n  "type": "object",\n  "properties": {\n    "response": {\n      "type": "string",\n      "description": "The response text"\n    }\n  },\n  "required": ["response"],\n  "additionalProperties": false\n}',
+			description: 'JSON Schema that defines the structure of the AI response',
+
 		},
 		{
 			displayName: 'Reasoning',
@@ -178,17 +188,6 @@ const taskProperties: INodeProperties[] = [{
 			default: 'DE',
 			description: 'VPN country to use for the task',
 		},
-		{
-			displayName: 'Output Schema',
-			name: 'outputSchema',
-			type: 'json',
-			typeOptions: {
-				rows: 10,
-			},
-			default: '{\n  "type": "object",\n  "properties": {\n    "response": {\n      "type": "string",\n      "description": "The response text"\n    }\n  },\n  "required": ["response"],\n  "additionalProperties": false\n}',
-			description: 'JSON Schema that defines the structure of the AI response',
-
-		}
 	],
 },
 ]
