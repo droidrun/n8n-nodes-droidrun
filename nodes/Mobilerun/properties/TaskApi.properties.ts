@@ -16,20 +16,11 @@ const taskProperties: INodeProperties[] = [{
 	displayName: 'LLM Model Name or ID',
 	name: 'llmModel',
 	type: 'options',
-	default: 'openai/gpt-5.1',
+	default: '',
+	typeOptions: {
+		loadOptionsMethod: 'loadLlmModels'
+	},
 	description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-	options: [
-		{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
-		{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
-		{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
-		{ name: 'Google Gemini 3 Flash', value: 'google/gemini-3-flash' },
-		{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
-		{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
-		{ name: 'MoonshotAI Kimi K2 Thinking', value: 'moonshotai/kimi-k2-thinking' },
-		{ name: 'OpenAI GPT-5.1', value: 'openai/gpt-5.1' },
-		{ name: 'OpenAI GPT-5.2', value: 'openai/gpt-5.2' },
-		{ name: 'Qwen Qwen3 8B', value: 'qwen/qwen3-8b' }
-	],
 },
 {
 	displayName: 'Options',
@@ -231,18 +222,6 @@ export const TaskResources = (): INodeProperties[] => {
 					},
 				},
 				{
-					name: 'Get Task Gif',
-					value: 'getTaskGif',
-					description: 'Get a screenshot of a task',
-					action: 'Get task gif',
-					routing: {
-						request: {
-							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/gif" }}',
-						},
-					},
-				},
-				{
 					name: 'Get Task Screenshot',
 					value: 'getTaskScreenshot',
 					description: 'Get a screenshot of a task',
@@ -263,6 +242,18 @@ export const TaskResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: '={{ "/tasks/" + $parameter.taskId + "/screenshots" }}',
+						},
+					},
+				},
+				{
+					name: 'Get Task Status',
+					value: 'getTaskStatus',
+					description: 'Get a status of a task',
+					action: 'Get task status',
+					routing: {
+						request: {
+							method: 'GET',
+							url: '={{ "/tasks/" + $parameter.taskId + "/status" }}',
 						},
 					},
 				},
@@ -310,7 +301,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/tasks/',
+							url: '/tasks',
 						},
 					},
 				},
@@ -348,7 +339,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '/tasks/',
+							url: '/tasks',
 							body: {
 								task: '={{ $parameter.task }}',
 								llmModel: '={{ $parameter.llmModel }}',
@@ -385,7 +376,7 @@ export const TaskResources = (): INodeProperties[] => {
 			placeholder: 'Enter Task ID',
 			displayOptions: {
 				show: {
-					operation: ['getTask', 'getTaskGif', 'getTaskScreenshot', 'getTaskScreenshots', 'getTaskTrajectory', 'getTaskUIState', 'getTaskUIStates', 'stopTask'],
+					operation: ['getTask', 'getTaskStatus', 'getTaskScreenshot', 'getTaskScreenshots', 'getTaskTrajectory', 'getTaskUIState', 'getTaskUIStates', 'stopTask'],
 				},
 			},
 		},

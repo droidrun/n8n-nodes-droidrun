@@ -38,8 +38,8 @@ export class MobilerunApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.mobilerun.ai/v1',
-			url: '/tasks/',
+			baseURL: 'https://api.mobilerun.ai/v1/',
+			url: 'tasks',
 			method: 'GET',
 		},
 	};

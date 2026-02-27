@@ -8,7 +8,7 @@ export class Mobilerun implements INodeType {
 		name: 'mobilerun',
 		group: ['transform'],
 		version: 1,
-		icon: 'file:droidrun-logo.svg',
+		icon: 'file:mobilerun-logo.svg',
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
 		description: 'Access the Mobilerun Cloud Api',
 		defaults: {
@@ -38,41 +38,40 @@ export class Mobilerun implements INodeType {
 	};
 
 	methods = {
-		/*
-		// API Currently not exposed
-*/
 		loadOptions: {
-			/*
-				async loadLlmModels(this: ILoadOptionsFunctions) {
-					try {
-						const response = await this.helpers.httpRequestWithAuthentication.call(
-							this,
-							'mobilerunApi',
-							{
-								method: 'GET',
-								url: 'https://litellm.droidrun.ai/v1/models',
-								returnFullResponse: true,
-							},
-						) as { body?: { data?: Array<{ id: string; object: string }> } };
+			async loadLlmModels(this: ILoadOptionsFunctions) {
+				try {
+					const response = await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'mobilerunApi',
+						{
+							method: 'GET',
+							url: 'https://api.mobilerun.ai/v1/models',
+							returnFullResponse: true,
+						},
+					) as { body?: { data?: Array<{ id: string; object: string }> } };
 
-						const models = response?.body?.data || [];
-						return models.map((model) => ({
-							name: model.id,
-							value: model.id,
-						}));
-					} catch (error) {
-						// Fallback to hardcoded
-						return [
-							{ name: 'OpenAI GPT-5', value: 'openai/gpt-5' },
-							{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
-							{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
-							{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
-							{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
-							{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
-							{ name: 'MoonshotAI Kimi K2', value: 'moonshotai/kimi-k2' },
-						];
-					}
-				}, */
+					const models = response?.body?.data || [];
+					return models.map((model) => ({
+						name: model.id,
+						value: model.id,
+					}));
+				} catch (error) {
+					// Fallback to hardcoded
+					return [
+						{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
+						{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
+						{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
+						{ name: 'Google Gemini 3 Flash', value: 'google/gemini-3-flash' },
+						{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
+						{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
+						{ name: 'MoonshotAI Kimi K2 Thinking', value: 'moonshotai/kimi-k2-thinking' },
+						{ name: 'OpenAI GPT-5.1', value: 'openai/gpt-5.1' },
+						{ name: 'OpenAI GPT-5.2', value: 'openai/gpt-5.2' },
+						{ name: 'Qwen Qwen3 8B', value: 'qwen/qwen3-8b' }
+					];
+				}
+			},
 
 			async loadDevices(this: ILoadOptionsFunctions) {
 				try {

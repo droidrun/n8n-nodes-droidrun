@@ -1,8 +1,8 @@
 import { INodeProperties } from 'n8n-workflow';
 import { AppResources } from './properties/AppApi.properties';
 import { TaskResources } from './properties/TaskApi.properties';
-import { CredentialResources } from './properties/CredentialApi.properties';
-import { DeviceResources } from './properties/DeviceApi.properties';
+// import { CredentialResources } from './properties/CredentialApi.properties';
+// import { DeviceResources } from './properties/DeviceApi.properties';
 export const MobilerunResources = (): INodeProperties[] => {
 	return [
 		{
@@ -22,7 +22,7 @@ export const MobilerunResources = (): INodeProperties[] => {
 
 		...TaskResources(),
 		...AppResources(),
-		...CredentialResources(),
-		...DeviceResources()
+		// ...CredentialResources(), //TODO
+		//...DeviceResources() //needs further testing
 	]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@droidrun/n8n-nodes-droidrun",
+  "name": "@mobilerun/n8n-nodes-mobilerun",
   "version": "1.1.3",
   "description": "n8n community node for integrating Droidrun AI with workflows.",
   "keywords": [
@@ -69,8 +69,5 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
-  },
-  "dependencies": {
-    "@langchain/core": "^1.1.16"
   }
 }
