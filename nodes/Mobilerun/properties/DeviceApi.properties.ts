@@ -21,7 +21,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'DELETE',
-							url: '/devices/{{$parameter.deviceId}}',
+							url: '={{ "devices/" + $parameter.deviceId }}',
 						},
 					},
 				},
@@ -33,7 +33,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}',
+							url: '={{ "devices/" + $parameter.deviceId }}',
 						},
 					},
 				},
@@ -45,7 +45,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}/tasks',
+							url: '={{ "devices/" + $parameter.deviceId + "/tasks" }}',
 						},
 					},
 				},
@@ -57,7 +57,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices',
+							url: 'devices',
 						},
 					},
 				},
@@ -69,7 +69,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '/devices',
+							url: 'devices',
 						},
 					},
 				},
@@ -81,7 +81,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}/wait',
+							url: '={{ "devices/" + $parameter.deviceId + "/wait" }}',
 						},
 					},
 				},
@@ -97,6 +97,7 @@ export const DeviceResources = (): INodeProperties[] => {
 			options: [
 				{ name: 'Assigned', value: 'assigned' },
 				{ name: 'Creating', value: 'creating' },
+				{ name: 'Disconnected', value: 'disconnected' },
 				{ name: 'Ready', value: 'ready' },
 				{ name: 'Terminated', value: 'terminated' },
 				{ name: 'Unknown', value: 'unknown' },
@@ -230,7 +231,8 @@ export const DeviceResources = (): INodeProperties[] => {
 			type: 'options',
 			options: [
 				{ name: 'Limrun', value: 'limrun' },
-				{ name: 'Remote', value: 'remote' },
+				{ name: 'Physical', value: 'physical' },
+				{ name: 'Premium', value: 'premium' },
 			],
 			default: 'limrun',
 			required: true,
@@ -253,10 +255,12 @@ export const DeviceResources = (): INodeProperties[] => {
 			name: 'deviceType',
 			type: 'options',
 			options: [
-				{ name: 'Temporary Personal Phone', value: 'temporary_personal_phone' },
-				{ name: 'Physical Phone', value: 'physical_phone' },
+				{ name: 'Device Slot', value: 'device_slot' },
+				{ name: 'Dedicated Emulated Device', value: 'dedicated_emulated_device' },
+				{ name: 'Dedicated Physical Device', value: 'dedicated_physical_device' },
+				{ name: 'Dedicated Premium Device', value: 'dedicated_premium_device' },
 			],
-			default: 'temporary_personal_phone',
+			default: 'device_slot',
 			required: true,
 			displayOptions: {
 				show: {
