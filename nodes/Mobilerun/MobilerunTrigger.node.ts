@@ -99,11 +99,11 @@ export class MobilerunTrigger implements INodeType {
 					}
 
 					if (!response?.body?.id) {
-						throw new ApplicationError('Mobilerun subscribe: Antwort enthält keine id.');
+						throw new ApplicationError('Mobilerun subscribe: reply has no id.');
 					}
 
 					if (response?.body?.subscribed === false) {
-						throw new ApplicationError('Mobilerun subscribe: subscription war nicht erfolgreich.');
+						throw new ApplicationError('Mobilerun subscribe: subscription wasnt successfull.');
 					}
 
 					this.logger.debug(`[MOBILERUN] setting hookId ${response?.body?.id}`)
