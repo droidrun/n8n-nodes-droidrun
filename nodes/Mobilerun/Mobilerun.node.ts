@@ -1,5 +1,5 @@
 import { MobilerunResources } from './Mobilerun.properties';
-import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions, ApplicationError } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions, JsonObject, NodeApiError } from 'n8n-workflow';
 import { version } from '../../package.json';
 
 export class Mobilerun implements INodeType {
@@ -118,8 +118,7 @@ export class Mobilerun implements INodeType {
 					}));
 				} catch (error) {
 					// Return empty if API fails - user can enter manually
-					throw new ApplicationError(error)
-					return [];
+					throw new NodeApiError(this.getNode(), error as JsonObject)
 				}
 			},
 
