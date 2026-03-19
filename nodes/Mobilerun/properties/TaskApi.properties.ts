@@ -452,7 +452,7 @@ export const TaskResources = (): INodeProperties[] => {
 			},
 		},
 
-		...getTaskResourceForOperation('runTask')
-		,...getTaskResourceForOperation('runTaskAndWait')
+		...getTaskResourceForOperation('runTask'),
+		...getTaskResourceForOperation('runTaskAndWait'),
 	]
 }
