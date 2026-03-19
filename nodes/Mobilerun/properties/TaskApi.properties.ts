@@ -437,23 +437,6 @@ export const TaskResources = (): INodeProperties[] => {
 		},
 
 		{
-			displayName: 'Polling Interval (Seconds)',
-			name: 'pollIntervalSeconds',
-			type: 'number',
-			typeOptions: {
-				minValue: 1,
-				maxValue: 60,
-			},
-			default: 3,
-			description: 'How often to check task status when waiting for completion',
-			displayOptions: {
-				show: {
-					operation: ['runTaskAndWait'],
-				},
-			},
-		},
-
-		{
 			displayName: 'Maximum Wait Time (Seconds)',
 			name: 'maxWaitSeconds',
 			type: 'number',
@@ -461,7 +444,7 @@ export const TaskResources = (): INodeProperties[] => {
 				minValue: 5,
 			},
 			default: 900,
-			description: 'Maximum time to wait before timing out',
+			description: 'Maximum time to wait for stream events before timing out',
 			displayOptions: {
 				show: {
 					operation: ['runTaskAndWait'],
