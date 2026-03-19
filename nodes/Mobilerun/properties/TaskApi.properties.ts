@@ -428,7 +428,7 @@ export const TaskResources = (): INodeProperties[] => {
 			default: '',
 			required: true,
 			description: 'Device ID is required. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			hint: 'for manuall device selection use n8n expressions',
+			hint: 'for manual device selection use n8n expressions',
 			displayOptions: {
 				show: {
 						operation: ['runTask', 'runTaskAndWait'],
