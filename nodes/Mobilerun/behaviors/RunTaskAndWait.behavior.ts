@@ -181,8 +181,8 @@ export async function runTaskAndWaitPostReceive(
 		clearTimeout?: (handle: unknown) => void;
 	};
 
-	if (!runtime.fetch || !runtime.TextDecoder || !runtime.setTimeout || !runtime.clearTimeout) {
-		throw new ApplicationError('Runtime is missing required stream APIs (fetch/TextDecoder/timers)');
+	if (!runtime.fetch || !runtime.TextDecoder || !runtime.setTimeout || !runtime.clearTimeout || !runtime.AbortController) {
+		throw new ApplicationError('Runtime is missing required stream APIs (fetch/AbortController/TextDecoder/timers)');
 	}
 
 	const maxWaitSeconds = this.getNodeParameter('maxWaitSeconds') as number;
@@ -211,9 +211,9 @@ export async function runTaskAndWaitPostReceive(
 	let lastEventName: string | undefined;
 	let lastEventPayload: IDataObject | undefined;
 
-	const abortController = runtime.AbortController ? new runtime.AbortController() : undefined;
+	const abortController = new runtime.AbortController();
 	const timeoutHandle = runtime.setTimeout(() => {
-		abortController?.abort();
+		abortController.abort();
 	}, maxWaitSeconds * 1000);
 
 	try {
@@ -223,7 +223,7 @@ export async function runTaskAndWaitPostReceive(
 				Authorization: `Bearer ${token}`,
 				Accept: 'text/event-stream',
 			},
-			signal: abortController?.signal,
+			signal: abortController.signal,
 		});
 
 		if (!streamResponse.ok) {
@@ -284,7 +284,7 @@ export async function runTaskAndWaitPostReceive(
 			}
 		}
 	} catch (error) {
-		const aborted = abortController?.signal.aborted === true;
+		const aborted = abortController.signal.aborted === true;
 		if (aborted) {
 			throw new NodeOperationError(this.getNode(), 'Timed out waiting for task stream to reach terminal status', {
 				description: `taskId=${taskId}, lastStatus=${finalStatus}, maxWaitSeconds=${maxWaitSeconds}`,
