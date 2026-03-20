@@ -1,4 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
+import { runTaskAndWaitPostReceive } from '../behaviors/RunTaskAndWait.behavior';
 
 const taskProperties: INodeProperties[] = [{
 	displayName: 'Task',
@@ -80,19 +81,6 @@ const taskProperties: INodeProperties[] = [{
 				},
 			],
 			description: 'Package credentials configuration',
-		},
-		{
-			displayName: 'Device Name or ID',
-			name: 'deviceId',
-			placeholder: 'Choose Device',
-			type: 'options',
-			allowArbitraryValues: true,
-			typeOptions: {
-				loadOptionsMethod: 'loadDevices'
-			},
-			default: '',
-			description: 'Device configuration. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			hint: 'for manuall device selection use n8n expressions'
 		},
 		{
 			displayName: 'Display ID',
@@ -217,7 +205,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId }}',
+							url: '={{ "tasks/" + $parameter.taskId }}',
 						},
 					},
 				},
@@ -229,7 +217,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/screenshots/" +  $parameter.index }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/screenshots/" +  $parameter.index }}',
 						},
 					},
 				},
@@ -241,7 +229,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/screenshots" }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/screenshots" }}',
 						},
 					},
 				},
@@ -253,7 +241,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/status" }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/status" }}',
 						},
 					},
 				},
@@ -265,7 +253,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/trajectory" }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/trajectory" }}',
 						},
 					},
 				},
@@ -277,7 +265,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/ui_states/" + $parameter.index }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/ui_states/" + $parameter.index }}',
 						},
 					},
 				},
@@ -289,7 +277,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/tasks/" + $parameter.taskId + "/ui_states" }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/ui_states" }}',
 						},
 					},
 				},
@@ -301,7 +289,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/tasks',
+							url: 'tasks',
 						},
 					},
 				},
@@ -327,7 +315,7 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '={{ "/tasks/" + $parameter.taskId + "/cancel" }}',
+							url: '={{ "tasks/" + $parameter.taskId + "/cancel" }}',
 						},
 					},
 				},
@@ -339,13 +327,13 @@ export const TaskResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '/tasks',
+							url: 'tasks',
 							body: {
 								task: '={{ $parameter.task }}',
 								llmModel: '={{ $parameter.llmModel }}',
 								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
 								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
-								deviceId: '={{ $parameter.options?.deviceId || undefined }}',
+								deviceId: '={{ $parameter.deviceId }}',
 								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
 								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
 								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
@@ -356,6 +344,38 @@ export const TaskResources = (): INodeProperties[] => {
 								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
 								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
 							},
+						},
+					},
+				},
+				{
+					name: 'Run Task and Wait',
+					value: 'runTaskAndWait',
+					description: 'Run a task and wait until it is completed, failed, or cancelled',
+					action: 'Run task and wait',
+					routing: {
+						request: {
+							method: 'POST',
+							url: 'tasks',
+							returnFullResponse: true,
+							body: {
+								task: '={{ $parameter.task }}',
+								llmModel: '={{ $parameter.llmModel }}',
+								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
+								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
+								deviceId: '={{ $parameter.deviceId }}',
+								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
+								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
+								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
+								maxSteps: '={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
+								outputSchema: '={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
+								reasoning: '={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
+								temperature: '={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
+								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
+								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
+							},
+						},
+						output: {
+							postReceive: [runTaskAndWaitPostReceive],
 						},
 					},
 				},
@@ -396,6 +416,43 @@ export const TaskResources = (): INodeProperties[] => {
 			},
 		},
 
-		...getTaskResourceForOperation('runTask')
+		{
+			displayName: 'Device Name or ID',
+			name: 'deviceId',
+			placeholder: 'Choose Device',
+			type: 'options',
+			allowArbitraryValues: true,
+			typeOptions: {
+				loadOptionsMethod: 'loadDevices'
+			},
+			default: '',
+			required: true,
+			description: 'Device ID is required. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			hint: 'for manual device selection use n8n expressions',
+			displayOptions: {
+				show: {
+						operation: ['runTask', 'runTaskAndWait'],
+				},
+			},
+		},
+
+		{
+			displayName: 'Maximum Wait Time (Seconds)',
+			name: 'maxWaitSeconds',
+			type: 'number',
+			typeOptions: {
+				minValue: 5,
+			},
+			default: 900,
+			description: 'Maximum time to wait for stream events before timing out',
+			displayOptions: {
+				show: {
+					operation: ['runTaskAndWait'],
+				},
+			},
+		},
+
+		...getTaskResourceForOperation('runTask'),
+		...getTaskResourceForOperation('runTaskAndWait'),
 	]
 }

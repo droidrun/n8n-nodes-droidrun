@@ -21,7 +21,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'DELETE',
-							url: '/devices/{{$parameter.deviceId}}',
+							url: '={{ "devices/" + $parameter.deviceId }}',
 						},
 					},
 				},
@@ -33,7 +33,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}',
+							url: '={{ "devices/" + $parameter.deviceId }}',
 						},
 					},
 				},
@@ -45,7 +45,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}/tasks',
+							url: '={{ "devices/" + $parameter.deviceId + "/tasks" }}',
 						},
 					},
 				},
@@ -57,19 +57,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices',
-						},
-					},
-				},
-				{
-					name: 'Provision Device',
-					value: 'provisionDevice',
-					description: 'Provision a new device',
-					action: 'Provision a new device',
-					routing: {
-						request: {
-							method: 'POST',
-							url: '/devices',
+							url: 'devices',
 						},
 					},
 				},
@@ -81,7 +69,7 @@ export const DeviceResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/devices/{{$parameter.deviceId}}/wait',
+							url: '={{ "devices/" + $parameter.deviceId + "/wait" }}',
 						},
 					},
 				},
@@ -97,6 +85,7 @@ export const DeviceResources = (): INodeProperties[] => {
 			options: [
 				{ name: 'Assigned', value: 'assigned' },
 				{ name: 'Creating', value: 'creating' },
+				{ name: 'Disconnected', value: 'disconnected' },
 				{ name: 'Ready', value: 'ready' },
 				{ name: 'Terminated', value: 'terminated' },
 				{ name: 'Unknown', value: 'unknown' },
@@ -218,140 +207,6 @@ export const DeviceResources = (): INodeProperties[] => {
 				send: {
 					type: 'query',
 					property: 'orderByDirection',
-					value: '={{ $value }}',
-				},
-			},
-		},
-
-		// Parameters for Provision Device
-		{
-			displayName: 'Provider',
-			name: 'provider',
-			type: 'options',
-			options: [
-				{ name: 'Limrun', value: 'limrun' },
-				{ name: 'Remote', value: 'remote' },
-			],
-			default: 'limrun',
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'query',
-					property: 'provider',
-					value: '={{ $value }}',
-				},
-			},
-		},
-		{
-			displayName: 'Device Type',
-			name: 'deviceType',
-			type: 'options',
-			options: [
-				{ name: 'Temporary Personal Phone', value: 'temporary_personal_phone' },
-				{ name: 'Physical Phone', value: 'physical_phone' },
-			],
-			default: 'temporary_personal_phone',
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'query',
-					property: 'deviceType',
-					value: '={{ $value }}',
-				},
-			},
-		},
-		{
-			displayName: 'Apps',
-			name: 'apps',
-			type: 'string',
-			typeOptions: {
-				multipleValues: true,
-			},
-			default: [],
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'body',
-					property: 'apps',
-					value: '={{ $value }}',
-				},
-			},
-		},
-		{
-			displayName: 'Files',
-			name: 'files',
-			type: 'string',
-			typeOptions: {
-				multipleValues: true,
-			},
-			default: [],
-			required: true,
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'body',
-					property: 'files',
-					value: '={{ $value }}',
-				},
-			},
-		},
-		{
-			displayName: 'Country',
-			name: 'country',
-			type: 'string',
-			default: '',
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'body',
-					property: 'country',
-					value: '={{ $value }}',
-				},
-			},
-		},
-		{
-			displayName: 'Name',
-			name: 'name',
-			type: 'string',
-			default: '',
-			displayOptions: {
-				show: {
-					resource: ['device'],
-					operation: ['provisionDevice'],
-				},
-			},
-			routing: {
-				send: {
-					type: 'body',
-					property: 'name',
 					value: '={{ $value }}',
 				},
 			},

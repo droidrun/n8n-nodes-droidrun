@@ -20,7 +20,7 @@ export const AppResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/apps',
+							url: 'apps',
 
 						},
 					},

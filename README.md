@@ -22,7 +22,6 @@ This node exposes the following resources and operations:
 
 - Inspect Task
   - Get Task
-  - Get Task Gif
   - Get Task Screenshot
   - Get Task Screenshots
   - Get Task Status

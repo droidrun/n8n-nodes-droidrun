@@ -19,8 +19,8 @@ export const CredentialResources = (): INodeProperties[] => {
 					action: 'Add field to specific credential',
 					routing: {
 						request: {
-							method: 'PATCH',
-							url: '={{ "/credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields"  }}',
+							method: 'POST',
+							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields" }}',
 							body: {
 								fieldType: '={{ $parameter.credentialType }}',
 								value: '={{ $parameter.credentialValue }}'
@@ -36,13 +36,10 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '={{ "/credentials/packages/" + $parameter.packageName }}',
+							url: '={{ "credentials/packages/" + $parameter.packageName }}',
 							body: {
 								credentialName: '={{ $parameter.credentialName }}',
-								fields: {
-									fieldsType: '={{ $parameter.credentialType }}',
-									value: '={{ $parameter.credentialValue }}'
-								}
+								fields: '={{ [{ fieldType: $parameter.credentialType, value: $parameter.credentialValue }] }}',
 							}
 						},
 					},
@@ -55,7 +52,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'DELETE',
-							url: '={{ "/credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName }}',
+							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName }}',
 						},
 					},
 				},
@@ -67,7 +64,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'DELETE',
-							url: '={{ "/credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields/" + $parameter.credentialType  }}',
+							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields/" + $parameter.credentialType }}',
 						},
 					},
 				},
@@ -79,7 +76,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName}}',
+							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName }}',
 
 						},
 					},
@@ -92,7 +89,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'POST',
-							url: '/credentials',
+							url: 'credentials/packages',
 							body: {
 								packageName: '={{ $parameter.packageName }}'
 							}
@@ -107,7 +104,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '/credentials',
+							url: 'credentials',
 
 						},
 					},
@@ -120,7 +117,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'GET',
-							url: '={{ "/credentials/packages/" + $parameter.packageName }}',
+							url: '={{ "credentials/packages/" + $parameter.packageName }}',
 
 						},
 					},
@@ -133,7 +130,7 @@ export const CredentialResources = (): INodeProperties[] => {
 					routing: {
 						request: {
 							method: 'PATCH',
-							url: '={{ "/credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields/" + $parameter.credentialType  }}',
+							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields/" + $parameter.credentialType }}',
 							body: {
 								value: '={{ $parameter.credentialValue }}'
 							}

@@ -170,4 +170,3 @@ export class MobilerunTrigger implements INodeType {
 		}
 	}
 };
-

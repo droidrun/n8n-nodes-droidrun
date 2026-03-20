@@ -24,7 +24,7 @@ export class Mobilerun implements INodeType {
 			},
 		],
 		requestDefaults: {
-			baseURL: 'https://api.mobilerun.ai/v1',
+			baseURL: 'https://api.mobilerun.ai/v1/',
 			headers: {
 				'Content-Type': 'application/json',
 				'User-Agent': `mobilerun-n8n/${version}`,
