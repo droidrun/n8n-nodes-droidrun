@@ -45,6 +45,13 @@ const taskProperties: INodeProperties[] = [{
 			hint: 'For manuall app selection use n8n expressions'
 		},
 		{
+			displayName: 'Continue on Failure',
+			name: 'continueOnFailure',
+			type: 'boolean',
+			default: false,
+			description: 'Whether the agent should continue executing if an individual action fails',
+		},
+		{
 			displayName: 'Credentials',
 			name: 'credentials',
 			type: 'fixedCollection',
@@ -114,6 +121,14 @@ const taskProperties: INodeProperties[] = [{
 			description: 'Maximum number of steps for task execution',
 		},
 		{
+			displayName: 'Memory Namespace',
+			name: 'memoryNamespace',
+			type: 'string',
+			default: '',
+			description: 'Memory namespace for cross-task personalization. Tasks sharing a namespace share memories.',
+			placeholder: 'e.g. alibaba',
+		},
+		{
 			displayName: 'Output Schema',
 			name: 'outputSchema',
 			type: 'json',
@@ -130,6 +145,13 @@ const taskProperties: INodeProperties[] = [{
 			type: 'boolean',
 			default: true,
 			description: 'Whether to enable reasoning mode',
+		},
+		{
+			displayName: 'Stealth',
+			name: 'stealth',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to enable stealth mode (human-like tap randomization, curved swipes, natural typing)',
 		},
 		{
 			displayName: 'Temperature',
@@ -308,6 +330,21 @@ export const TaskResources = (): INodeProperties[] => {
 			displayOptions: { show: { resource: ['manageTask'] } },
 			options: [
 				{
+					name: 'Send Message',
+					value: 'sendMessage',
+					description: 'Send a message to a running agent task',
+					action: 'Send message to task',
+					routing: {
+						request: {
+							method: 'POST',
+							url: '={{ "tasks/" + $parameter.taskId + "/message" }}',
+							body: {
+								message: '={{ $parameter.message }}',
+							},
+						},
+					},
+				},
+				{
 					name: 'Stop Task',
 					value: 'stopTask',
 					description: 'Stops a task',
@@ -332,14 +369,17 @@ export const TaskResources = (): INodeProperties[] => {
 								task: '={{ $parameter.task }}',
 								llmModel: '={{ $parameter.llmModel }}',
 								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
+								continueOnFailure: '={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
 								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
 								deviceId: '={{ $parameter.deviceId }}',
 								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
 								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
 								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
 								maxSteps: '={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
+								memoryNamespace: '={{ $parameter.options?.memoryNamespace || undefined }}',
 								outputSchema: '={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
 								reasoning: '={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
+								stealth: '={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
 								temperature: '={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
 								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
 								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
@@ -361,14 +401,17 @@ export const TaskResources = (): INodeProperties[] => {
 								task: '={{ $parameter.task }}',
 								llmModel: '={{ $parameter.llmModel }}',
 								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
+								continueOnFailure: '={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
 								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
 								deviceId: '={{ $parameter.deviceId }}',
 								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
 								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
 								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
 								maxSteps: '={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
+								memoryNamespace: '={{ $parameter.options?.memoryNamespace || undefined }}',
 								outputSchema: '={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
 								reasoning: '={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
+								stealth: '={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
 								temperature: '={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
 								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
 								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
@@ -396,7 +439,7 @@ export const TaskResources = (): INodeProperties[] => {
 			placeholder: 'Enter Task ID',
 			displayOptions: {
 				show: {
-					operation: ['getTask', 'getTaskStatus', 'getTaskScreenshot', 'getTaskScreenshots', 'getTaskTrajectory', 'getTaskUIState', 'getTaskUIStates', 'stopTask'],
+					operation: ['getTask', 'getTaskStatus', 'getTaskScreenshot', 'getTaskScreenshots', 'getTaskTrajectory', 'getTaskUIState', 'getTaskUIStates', 'sendMessage', 'stopTask'],
 				},
 			},
 		},
@@ -412,6 +455,24 @@ export const TaskResources = (): INodeProperties[] => {
 			displayOptions: {
 				show: {
 					operation: ['getTaskScreenshot', 'getTaskUIState'],
+				},
+			},
+		},
+
+		{
+			displayName: 'Message',
+			name: 'message',
+			type: 'string',
+			typeOptions: {
+				rows: 3,
+			},
+			default: '',
+			required: true,
+			description: 'Message to send to the running agent',
+			placeholder: 'Enter message',
+			displayOptions: {
+				show: {
+					operation: ['sendMessage'],
 				},
 			},
 		},
