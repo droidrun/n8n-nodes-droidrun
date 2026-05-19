@@ -31,13 +31,6 @@ const taskProperties: INodeProperties[] = [{
 	default: {},
 	options: [
 		{
-			displayName: 'Continue on Failure',
-			name: 'continueOnFailure',
-			type: 'boolean',
-			default: false,
-			description: 'Whether the agent should continue executing if an individual action fails',
-		},
-		{
 			displayName: 'App Names or IDs',
 			name: 'apps',
 			type: 'multiOptions',
@@ -50,6 +43,13 @@ const taskProperties: INodeProperties[] = [{
 			placeholder: 'Choose App',
 			description: 'Apps configuration. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			hint: 'For manuall app selection use n8n expressions'
+		},
+		{
+			displayName: 'Continue on Failure',
+			name: 'continueOnFailure',
+			type: 'boolean',
+			default: false,
+			description: 'Whether the agent should continue executing if an individual action fails',
 		},
 		{
 			displayName: 'Credentials',
@@ -114,19 +114,19 @@ const taskProperties: INodeProperties[] = [{
 			description: 'List of files to be used in the task',
 		},
 		{
+			displayName: 'Max Steps',
+			name: 'maxSteps',
+			type: 'number',
+			default: 100,
+			description: 'Maximum number of steps for task execution',
+		},
+		{
 			displayName: 'Memory Namespace',
 			name: 'memoryNamespace',
 			type: 'string',
 			default: '',
 			description: 'Memory namespace for cross-task personalization. Tasks sharing a namespace share memories.',
 			placeholder: 'e.g. alibaba',
-		},
-		{
-			displayName: 'Max Steps',
-			name: 'maxSteps',
-			type: 'number',
-			default: 100,
-			description: 'Maximum number of steps for task execution',
 		},
 		{
 			displayName: 'Output Schema',
@@ -140,18 +140,18 @@ const taskProperties: INodeProperties[] = [{
 
 		},
 		{
-			displayName: 'Stealth',
-			name: 'stealth',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to enable stealth mode (human-like tap randomization, curved swipes, natural typing)',
-		},
-		{
 			displayName: 'Reasoning',
 			name: 'reasoning',
 			type: 'boolean',
 			default: true,
 			description: 'Whether to enable reasoning mode',
+		},
+		{
+			displayName: 'Stealth',
+			name: 'stealth',
+			type: 'boolean',
+			default: false,
+			description: 'Whether to enable stealth mode (human-like tap randomization, curved swipes, natural typing)',
 		},
 		{
 			displayName: 'Temperature',
