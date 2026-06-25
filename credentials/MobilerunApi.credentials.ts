@@ -19,7 +19,7 @@ export class MobilerunApi implements ICredentialType {
 				password: true,
 			},
 			required: true,
-			description: 'Your Mobilerun Api Key',
+			description: 'Your MobileRun API Key',
 		}
 	];
 

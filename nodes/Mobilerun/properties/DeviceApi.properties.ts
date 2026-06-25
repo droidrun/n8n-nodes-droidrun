@@ -81,16 +81,19 @@ export const DeviceResources = (): INodeProperties[] => {
 		{
 			displayName: 'State',
 			name: 'state',
-			type: 'options',
+			type: 'multiOptions',
 			options: [
 				{ name: 'Assigned', value: 'assigned' },
 				{ name: 'Creating', value: 'creating' },
-				{ name: 'Disconnected', value: 'disconnected' },
+				{ name: 'Maintenance', value: 'maintenance' },
+				{ name: 'Migrating', value: 'migrating' },
 				{ name: 'Ready', value: 'ready' },
+				{ name: 'Rebooting', value: 'rebooting' },
+				{ name: 'Resetting', value: 'resetting' },
 				{ name: 'Terminated', value: 'terminated' },
 				{ name: 'Unknown', value: 'unknown' },
 			],
-			default: 'ready',
+			default: ['ready'],
 			displayOptions: {
 				show: {
 					resource: ['device'],
@@ -101,7 +104,32 @@ export const DeviceResources = (): INodeProperties[] => {
 				send: {
 					type: 'query',
 					property: 'state',
-					value: '={{ $value }}',
+					value: '={{ $value.length ? $value.join(",") : undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Device Type',
+			name: 'type',
+			type: 'options',
+			options: [
+				{ name: 'Any', value: '' },
+				{ name: 'Dedicated Physical Device', value: 'dedicated_physical_device' },
+				{ name: 'Dedicated Premium Device', value: 'dedicated_premium_device' },
+				{ name: 'Dedicated iOS Device', value: 'dedicated_ios_device' },
+			],
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['listDevices'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'type',
+					value: '={{ $value || undefined }}',
 				},
 			},
 		},
@@ -120,7 +148,45 @@ export const DeviceResources = (): INodeProperties[] => {
 				send: {
 					type: 'query',
 					property: 'country',
-					value: '={{ $value }}',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Name',
+			name: 'name',
+			type: 'string',
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['listDevices'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'name',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Provider ID',
+			name: 'providerId',
+			type: 'string',
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['listDevices'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'providerId',
+					value: '={{ $value || undefined }}',
 				},
 			},
 		},

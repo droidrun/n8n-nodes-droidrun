@@ -160,11 +160,12 @@ const taskProperties: INodeProperties[] = [{
 				{ name: 'Germany', value: 'DE' },
 				{ name: 'India', value: 'IN' },
 				{ name: 'Japan', value: 'JP' },
+				{ name: 'None (No VPN)', value: '' },
 				{ name: 'South Africa', value: 'ZA' },
 				{ name: 'South Korea', value: 'KR' },
 				{ name: 'United States', value: 'US' },
 			],
-			default: 'DE',
+			default: '',
 			description: 'VPN country to use for the task',
 		},
 	],
@@ -381,6 +382,145 @@ export const TaskResources = (): INodeProperties[] => {
 				},
 			],
 			default: 'runTask',
+		},
+
+		// Parameters for List Tasks
+		{
+			displayName: 'Status',
+			name: 'status',
+			type: 'options',
+			options: [
+				{ name: 'Any', value: '' },
+				{ name: 'Cancelled', value: 'cancelled' },
+				{ name: 'Cancelling', value: 'cancelling' },
+				{ name: 'Completed', value: 'completed' },
+				{ name: 'Created', value: 'created' },
+				{ name: 'Failed', value: 'failed' },
+				{ name: 'Paused', value: 'paused' },
+				{ name: 'Queued', value: 'queued' },
+				{ name: 'Running', value: 'running' },
+			],
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'status',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Search Query',
+			name: 'query',
+			type: 'string',
+			default: '',
+			description: 'Search in task description',
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'query',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Order By',
+			name: 'orderBy',
+			type: 'options',
+			options: [
+				{ name: 'ID', value: 'id' },
+				{ name: 'Created At', value: 'createdAt' },
+				{ name: 'Finished At', value: 'finishedAt' },
+				{ name: 'Status', value: 'status' },
+			],
+			default: 'createdAt',
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'orderBy',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Order Direction',
+			name: 'orderByDirection',
+			type: 'options',
+			options: [
+				{ name: 'Ascending', value: 'asc' },
+				{ name: 'Descending', value: 'desc' },
+			],
+			default: 'desc',
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'orderByDirection',
+					value: '={{ $value || undefined }}',
+				},
+			},
+		},
+		{
+			displayName: 'Page',
+			name: 'page',
+			type: 'number',
+			default: 1,
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					paginate: true,
+					type: 'query',
+					property: 'page',
+					value: '={{ $value }}',
+				},
+			},
+		},
+		{
+			displayName: 'Page Size',
+			name: 'pageSize',
+			type: 'number',
+			default: 20,
+			displayOptions: {
+				show: {
+					resource: ['inspectTask'],
+					operation: ['listTasks'],
+				},
+			},
+			routing: {
+				send: {
+					type: 'query',
+					property: 'pageSize',
+					value: '={{ $value }}',
+				},
+			},
 		},
 
 		/*

@@ -201,7 +201,7 @@ export async function runTaskAndWaitPostReceive(
 	const token = credentials.token as string | undefined;
 
 	if (!token) {
-		throw new NodeOperationError(this.getNode(), 'Missing Mobilerun API token in credentials');
+		throw new NodeOperationError(this.getNode(), 'Missing MobileRun API token in credentials');
 	}
 
 	const streamUrl = resolveTaskEventStreamUrl(taskId, streamUrlFromResponse);
