@@ -73,6 +73,35 @@ export const DeviceResources = (): INodeProperties[] => {
 						},
 					},
 				},
+				{
+					name: 'Connect Proxy',
+					value: 'connectProxy',
+					description: 'Connect a proxy to the device',
+					action: 'Connect proxy',
+					routing: {
+						request: {
+							method: 'POST',
+							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
+							body: {
+								smartIp: '={{ $parameter.smartIp }}',
+								name: '={{ $parameter.proxyMode === "preconfigured" ? $parameter.proxyName : undefined }}',
+								socks5: '={{ $parameter.proxyMode === "socks5" ? { host: $parameter.proxyHost, port: $parameter.proxyPort, user: $parameter.proxyUser || undefined, password: $parameter.proxyPassword || undefined } : undefined }}',
+							},
+						},
+					},
+				},
+				{
+					name: 'Disconnect Proxy',
+					value: 'disconnectProxy',
+					description: 'Disconnect the proxy from the device',
+					action: 'Disconnect proxy',
+					routing: {
+						request: {
+							method: 'DELETE',
+							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
+						},
+					},
+				},
 			],
 			default: 'listDevices',
 		},
@@ -278,6 +307,114 @@ export const DeviceResources = (): INodeProperties[] => {
 			},
 		},
 
+		// Parameters for Connect Proxy
+		{
+			displayName: 'Proxy Mode',
+			name: 'proxyMode',
+			type: 'options',
+			options: [
+				{ name: 'SOCKS5 Proxy', value: 'socks5' },
+				{ name: 'Preconfigured Proxy (Name)', value: 'preconfigured' },
+			],
+			default: 'socks5',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+				},
+			},
+			description: 'The type of proxy configuration to connect',
+		},
+		{
+			displayName: 'Proxy Host',
+			name: 'proxyHost',
+			type: 'string',
+			default: '',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+					proxyMode: ['socks5'],
+				},
+			},
+			description: 'The host name or IP address of the SOCKS5 proxy',
+		},
+		{
+			displayName: 'Proxy Port',
+			name: 'proxyPort',
+			type: 'number',
+			default: 1080,
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+					proxyMode: ['socks5'],
+				},
+			},
+			description: 'The port of the SOCKS5 proxy',
+		},
+		{
+			displayName: 'Proxy Username',
+			name: 'proxyUser',
+			type: 'string',
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+					proxyMode: ['socks5'],
+				},
+			},
+			description: 'The username for the SOCKS5 proxy (if required)',
+		},
+		{
+			displayName: 'Proxy Password',
+			name: 'proxyPassword',
+			type: 'string',
+			typeOptions: {
+				password: true,
+			},
+			default: '',
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+					proxyMode: ['socks5'],
+				},
+			},
+			description: 'The password for the SOCKS5 proxy (if required)',
+		},
+		{
+			displayName: 'Proxy Name',
+			name: 'proxyName',
+			type: 'string',
+			default: '',
+			required: true,
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+					proxyMode: ['preconfigured'],
+				},
+			},
+			description: 'The name of the preconfigured proxy to connect',
+		},
+		{
+			displayName: 'Smart IP',
+			name: 'smartIp',
+			type: 'boolean',
+			default: false,
+			displayOptions: {
+				show: {
+					resource: ['device'],
+					operation: ['connectProxy'],
+				},
+			},
+			description: 'Whether to enable Smart IP rotation/management for the proxy',
+		},
+
 		// Parameters for operations requiring deviceId
 		{
 			displayName: 'Device ID',
@@ -288,7 +425,7 @@ export const DeviceResources = (): INodeProperties[] => {
 			displayOptions: {
 				show: {
 					resource: ['device'],
-					operation: ['getDevice', 'deleteDevice', 'getDeviceTasks', 'waitForDevice'],
+					operation: ['getDevice', 'deleteDevice', 'getDeviceTasks', 'waitForDevice', 'connectProxy', 'disconnectProxy'],
 				},
 			},
 		},
