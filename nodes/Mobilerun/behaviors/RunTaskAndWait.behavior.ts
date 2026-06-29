@@ -243,6 +243,24 @@ export async function runTaskAndWaitPostReceive(
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) {
+				if (buffer.trim().length > 0) {
+					const block = buffer.trim();
+					const decoded = decodeSseBlock(block);
+					if (decoded.data || decoded.event) {
+						streamEventCount += 1;
+						lastEventName = decoded.event;
+						if (decoded.data !== '[DONE]') {
+							const parsed = tryParseJson(decoded.data);
+							if (parsed) {
+								lastEventPayload = parsed;
+							}
+							const statusFromEvent = extractStatus(parsed);
+							if (statusFromEvent) {
+								finalStatus = statusFromEvent;
+							}
+						}
+					}
+				}
 				break;
 			}
 

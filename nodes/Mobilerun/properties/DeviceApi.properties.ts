@@ -14,6 +14,23 @@ export const DeviceResources = (): INodeProperties[] => {
 			displayOptions: { show: { resource: ['device'] } },
 			options: [
 				{
+					name: 'Connect Proxy',
+					value: 'connectProxy',
+					description: 'Connect a proxy to the device',
+					action: 'Connect proxy',
+					routing: {
+						request: {
+							method: 'POST',
+							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
+							body: {
+								smartIp: '={{ $parameter.smartIp }}',
+								name: '={{ $parameter.proxyMode === "preconfigured" ? $parameter.proxyName : undefined }}',
+								socks5: '={{ $parameter.proxyMode === "socks5" ? { host: $parameter.proxyHost, port: $parameter.proxyPort, user: $parameter.proxyUser || undefined, password: $parameter.proxyPassword || undefined } : undefined }}',
+							},
+						},
+					},
+				},
+				{
 					name: 'Delete Device',
 					value: 'deleteDevice',
 					description: 'Delete a specific device',
@@ -22,6 +39,18 @@ export const DeviceResources = (): INodeProperties[] => {
 						request: {
 							method: 'DELETE',
 							url: '={{ "devices/" + $parameter.deviceId }}',
+						},
+					},
+				},
+				{
+					name: 'Disconnect Proxy',
+					value: 'disconnectProxy',
+					description: 'Disconnect the proxy from the device',
+					action: 'Disconnect proxy',
+					routing: {
+						request: {
+							method: 'DELETE',
+							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
 						},
 					},
 				},
@@ -70,35 +99,6 @@ export const DeviceResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: '={{ "devices/" + $parameter.deviceId + "/wait" }}',
-						},
-					},
-				},
-				{
-					name: 'Connect Proxy',
-					value: 'connectProxy',
-					description: 'Connect a proxy to the device',
-					action: 'Connect proxy',
-					routing: {
-						request: {
-							method: 'POST',
-							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
-							body: {
-								smartIp: '={{ $parameter.smartIp }}',
-								name: '={{ $parameter.proxyMode === "preconfigured" ? $parameter.proxyName : undefined }}',
-								socks5: '={{ $parameter.proxyMode === "socks5" ? { host: $parameter.proxyHost, port: $parameter.proxyPort, user: $parameter.proxyUser || undefined, password: $parameter.proxyPassword || undefined } : undefined }}',
-							},
-						},
-					},
-				},
-				{
-					name: 'Disconnect Proxy',
-					value: 'disconnectProxy',
-					description: 'Disconnect the proxy from the device',
-					action: 'Disconnect proxy',
-					routing: {
-						request: {
-							method: 'DELETE',
-							url: '={{ "devices/" + $parameter.deviceId + "/proxy" }}',
 						},
 					},
 				},
