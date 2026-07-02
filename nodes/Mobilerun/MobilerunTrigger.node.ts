@@ -7,8 +7,8 @@ export class MobilerunTrigger implements INodeType {
 		group: ['trigger'],
 		version: 1,
 		icon: 'file:droidrun-logo.svg',
-		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Access the Mobilerun Cloud Trigger',
+		subtitle: 'Task event trigger',
+		description: 'Access the MobileRun Cloud Trigger',
 		defaults: {
 			name: 'Mobilerun Trigger',
 		},

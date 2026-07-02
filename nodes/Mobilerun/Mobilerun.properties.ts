@@ -10,7 +10,7 @@ export const MobilerunResources = (): INodeProperties[] => {
 			name: 'resource',
 			type: 'options',
 			options: [
-				{ name: 'Appstore', value: 'apps' },
+				{ name: 'App Store', value: 'apps' },
 				{ name: 'Device', value: 'device' },
 				{ name: 'Device Credential', value: 'credential' },
 				{ name: 'Inspect Task', value: 'inspectTask' },

@@ -1,5 +1,5 @@
 import { MobilerunResources } from './Mobilerun.properties';
-import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions, JsonObject, NodeApiError } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions } from 'n8n-workflow';
 import { version } from '../../package.json';
 
 export class Mobilerun implements INodeType {
@@ -10,7 +10,7 @@ export class Mobilerun implements INodeType {
 		version: 1,
 		icon: 'file:mobilerun-logo.svg',
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
-		description: 'Access the Mobilerun Cloud Api',
+		description: 'Access the MobileRun Cloud API',
 		defaults: {
 			name: 'Mobilerun',
 		},
@@ -49,9 +49,9 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/models',
 							returnFullResponse: true,
 						},
-					) as { body?: { data?: Array<{ id: string; object: string }> } };
+					) as { body?: { models?: Array<{ id: string }> } };
 
-					const models = response?.body?.data || [];
+					const models = response?.body?.models || [];
 					return models.map((model) => ({
 						name: model.id,
 						value: model.id,
@@ -59,16 +59,14 @@ export class Mobilerun implements INodeType {
 				} catch (error) {
 					// Fallback to hardcoded
 					return [
-						{ name: 'Anthropic Claude Sonnet 4.5', value: 'anthropic/claude-sonnet-4.5' },
-						{ name: 'Google Gemini 2.5 Flash', value: 'google/gemini-2.5-flash' },
-						{ name: 'Google Gemini 2.5 Pro', value: 'google/gemini-2.5-pro' },
-						{ name: 'Google Gemini 3 Flash', value: 'google/gemini-3-flash' },
-						{ name: 'Google Gemini 3 Pro Preview', value: 'google/gemini-3-pro-preview' },
-						{ name: 'MiniMax M2', value: 'minimax/minimax-m2' },
-						{ name: 'MoonshotAI Kimi K2 Thinking', value: 'moonshotai/kimi-k2-thinking' },
-						{ name: 'OpenAI GPT-5.1', value: 'openai/gpt-5.1' },
-						{ name: 'OpenAI GPT-5.2', value: 'openai/gpt-5.2' },
-						{ name: 'Qwen Qwen3 8B', value: 'qwen/qwen3-8b' }
+						{ name: 'Anthropic Claude Sonnet 4.6', value: 'anthropic/claude-sonnet-4.6' },
+						{ name: 'Google Gemini 3.5 Flash', value: 'google/gemini-3.5-flash' },
+						{ name: 'Google Gemini 3.1 Pro Preview', value: 'google/gemini-3.1-pro-preview' },
+						{ name: 'MobileRun Mobile Agent Fast', value: 'mobilerun/mobile-agent-fast' },
+						{ name: 'MobileRun Mobile Agent Thinking', value: 'mobilerun/mobile-agent-thinking' },
+						{ name: 'OpenAI GPT-5.4', value: 'openai/gpt-5.4' },
+						{ name: 'OpenAI GPT-5.4 Mini', value: 'openai/gpt-5.4-mini' },
+						{ name: 'xAI Grok 4.3', value: 'x-ai/grok-4.3' }
 					];
 				}
 			},
@@ -83,15 +81,17 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/devices',
 							returnFullResponse: true,
 						},
-					) as { body?: { items?: Array<{ id: string; name?: string }> } };
+					) as { body?: { items?: Array<{ id: string; name?: string; type?: string; state?: string }> } };
 
 					const devices = response?.body?.items || [];
-					const options = devices.map((device) => ({
-						name: device.name || device.id,
-						value: device.id,
-					}));
-					// Add empty option for no device selection
-					//options.unshift({ name: 'Auto-Select Device', value: '' });
+					const options = devices.map((device) => {
+						const typeStr = device.type ? ` (${device.type})` : '';
+						const name = device.name ? `${device.name}${typeStr}` : `${device.type || 'Device'} (${device.id.slice(0, 8)})`;
+						return {
+							name,
+							value: device.id,
+						};
+					});
 					return options;
 				} catch (error) {
 					// Return empty option if API fails
@@ -109,31 +109,17 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/apps',
 							returnFullResponse: true,
 						},
-					) as { body?: { items?: Array<{ packageName: string; displayName?: string; source?: string }> } };
+					) as { body?: { items?: Array<{ bundleId: string; displayName?: string; platform?: string }> } };
 
 					const apps = response?.body?.items || [];
 					return apps.map((app) => ({
-						name: `${app.displayName || app.packageName} (${app.source || 'unknown'})`,
-						value: app.packageName,
+						name: `${app.displayName || app.bundleId} (${app.platform || 'unknown'})`,
+						value: app.bundleId,
 					}));
 				} catch (error) {
 					// Return empty if API fails - user can enter manually
-					throw new NodeApiError(this.getNode(), error as JsonObject)
+					return [];
 				}
-			},
-
-			async loadVpnCountries(this: ILoadOptionsFunctions) {
-				return [
-					{ name: 'None', value: 'none' },
-					{ name: 'United States', value: 'US' },
-					{ name: 'Brazil', value: 'BR' },
-					{ name: 'France', value: 'FR' },
-					{ name: 'Germany', value: 'DE' },
-					{ name: 'India', value: 'IN' },
-					{ name: 'Japan', value: 'JP' },
-					{ name: 'South Korea', value: 'KR' },
-					{ name: 'South Africa', value: 'ZA' },
-				];
 			},
 		}
 	};
