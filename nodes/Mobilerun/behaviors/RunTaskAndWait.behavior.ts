@@ -1,5 +1,4 @@
 import {
-	ApplicationError,
 	IDataObject,
 	IExecuteSingleFunctions,
 	IN8nHttpFullResponse,
@@ -9,120 +8,9 @@ import {
 
 const TERMINAL_STATUSES = new Set(['completed', 'failed', 'cancelled']);
 
-type StreamReaderResult = { done: boolean; value?: Uint8Array };
-type StreamReader = {
-	read: () => Promise<StreamReaderResult>;
-	cancel: () => Promise<void>;
-};
-type StreamBody = {
-	getReader: () => StreamReader;
-};
-type StreamFetchResponse = {
-	ok: boolean;
-	status: number;
-	statusText: string;
-	body?: StreamBody;
-};
-type RuntimeFetch = (
-	url: string,
-	init: {
-		method: string;
-		headers: Record<string, string>;
-		signal?: unknown;
-	},
-) => Promise<StreamFetchResponse>;
-type RuntimeAbortController = {
-	signal: { aborted: boolean };
-	abort: () => void;
-};
-type RuntimeAbortControllerConstructor = new () => RuntimeAbortController;
-type RuntimeTextDecoder = {
-	decode: (input?: Uint8Array, options?: { stream?: boolean }) => string;
-};
-type RuntimeTextDecoderConstructor = new () => RuntimeTextDecoder;
+declare function setTimeout(callback: (...args: any[]) => void, ms?: number, ...args: any[]): any;
 
-function parseSseEventBlocks(buffer: string): { blocks: string[]; remainder: string } {
-	const normalized = buffer.replace(/\r\n/g, '\n');
-	const blocks: string[] = [];
-	let start = 0;
-
-	for (let i = 0; i < normalized.length - 1; i++) {
-		if (normalized[i] === '\n' && normalized[i + 1] === '\n') {
-			const block = normalized.slice(start, i).trim();
-			if (block.length > 0) {
-				blocks.push(block);
-			}
-			start = i + 2;
-			i += 1;
-		}
-	}
-
-	return {
-		blocks,
-		remainder: normalized.slice(start),
-	};
-}
-
-function decodeSseBlock(block: string): { event?: string; data?: string } {
-	const lines = block.split('\n');
-	let eventName: string | undefined;
-	const dataLines: string[] = [];
-
-	for (const line of lines) {
-		if (line.startsWith(':')) {
-			continue;
-		}
-
-		if (line.startsWith('event:')) {
-			eventName = line.slice('event:'.length).trim();
-			continue;
-		}
-
-		if (line.startsWith('data:')) {
-			dataLines.push(line.slice('data:'.length).trimStart());
-		}
-	}
-
-	if (dataLines.length === 0 && !eventName) {
-		return {};
-	}
-
-	return {
-		event: eventName,
-		data: dataLines.length ? dataLines.join('\n') : undefined,
-	};
-}
-
-function tryParseJson(data?: string): IDataObject | undefined {
-	if (!data) {
-		return undefined;
-	}
-
-	try {
-		return JSON.parse(data) as IDataObject;
-	} catch {
-		return undefined;
-	}
-}
-
-function extractStatus(parsed: IDataObject | undefined): string | undefined {
-	if (!parsed) {
-		return undefined;
-	}
-
-	const directStatus = parsed.status;
-	if (typeof directStatus === 'string' && directStatus.length > 0) {
-		return directStatus;
-	}
-
-	const nested = parsed.data as IDataObject | undefined;
-	const nestedStatus = nested?.status;
-	if (typeof nestedStatus === 'string' && nestedStatus.length > 0) {
-		return nestedStatus;
-	}
-
-	return undefined;
-}
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function getDefaultTaskAttachUrl(taskId: string): string {
 	return `https://api.mobilerun.ai/v1/tasks/${taskId}/attach`;
@@ -173,18 +61,6 @@ export async function runTaskAndWaitPostReceive(
 	items: INodeExecutionData[],
 	response: IN8nHttpFullResponse,
 ): Promise<INodeExecutionData[]> {
-	const runtime = globalThis as unknown as {
-		fetch?: RuntimeFetch;
-		AbortController?: RuntimeAbortControllerConstructor;
-		TextDecoder?: RuntimeTextDecoderConstructor;
-		setTimeout?: (cb: () => void, ms: number) => unknown;
-		clearTimeout?: (handle: unknown) => void;
-	};
-
-	if (!runtime.fetch || !runtime.TextDecoder || !runtime.setTimeout || !runtime.clearTimeout || !runtime.AbortController) {
-		throw new ApplicationError('Runtime is missing required stream APIs (fetch/AbortController/TextDecoder/timers)');
-	}
-
 	const maxWaitSeconds = this.getNodeParameter('maxWaitSeconds') as number;
 
 	const runTaskResponse = (response.body as IDataObject | undefined) ?? {};
@@ -206,131 +82,40 @@ export async function runTaskAndWaitPostReceive(
 
 	const streamUrl = resolveTaskEventStreamUrl(taskId, streamUrlFromResponse);
 	const startedAt = Date.now();
-	let streamEventCount = 0;
 	let finalStatus = 'created';
-	let lastEventName: string | undefined;
-	let lastEventPayload: IDataObject | undefined;
 
-	const abortController = new runtime.AbortController();
-	const timeoutHandle = runtime.setTimeout(() => {
-		abortController.abort();
-	}, maxWaitSeconds * 1000);
+	const pollIntervalMs = 5000;
+	const maxWaitMs = maxWaitSeconds * 1000;
 
-	try {
-		const streamResponse = await runtime.fetch(streamUrl, {
-			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				Accept: 'text/event-stream',
-			},
-			signal: abortController.signal,
-		});
-
-		if (!streamResponse.ok) {
-			throw new NodeOperationError(this.getNode(), 'Failed to open task stream', {
-				description: `status=${streamResponse.status}, statusText=${streamResponse.statusText}, streamUrl=${streamUrl}`,
-			});
-		}
-
-		if (!streamResponse.body) {
-			throw new ApplicationError('Mobilerun stream response did not include a readable body');
-		}
-
-		const reader = streamResponse.body.getReader();
-		const decoder = new runtime.TextDecoder();
-		let buffer = '';
-
-		while (true) {
-			const { done, value } = await reader.read();
-			if (done) {
-				if (buffer.trim().length > 0) {
-					const block = buffer.trim();
-					const decoded = decodeSseBlock(block);
-					if (decoded.data || decoded.event) {
-						streamEventCount += 1;
-						lastEventName = decoded.event;
-						if (decoded.data !== '[DONE]') {
-							const parsed = tryParseJson(decoded.data);
-							if (parsed) {
-								lastEventPayload = parsed;
-							}
-							const statusFromEvent = extractStatus(parsed);
-							if (statusFromEvent) {
-								finalStatus = statusFromEvent;
-							}
-						}
-					}
-				}
-				break;
-			}
-
-			buffer += decoder.decode(value, { stream: true });
-			const { blocks, remainder } = parseSseEventBlocks(buffer);
-			buffer = remainder;
-
-			for (const block of blocks) {
-				const decoded = decodeSseBlock(block);
-				if (!decoded.data && !decoded.event) {
-					continue;
-				}
-
-				streamEventCount += 1;
-				lastEventName = decoded.event;
-
-				if (decoded.data === '[DONE]') {
-					continue;
-				}
-
-				const parsed = tryParseJson(decoded.data);
-				if (parsed) {
-					lastEventPayload = parsed;
-				}
-
-				const statusFromEvent = extractStatus(parsed);
-				if (statusFromEvent) {
-					finalStatus = statusFromEvent;
-				}
-
-				if (TERMINAL_STATUSES.has(finalStatus)) {
-					await reader.cancel();
-					break;
-				}
-			}
-
-			if (TERMINAL_STATUSES.has(finalStatus)) {
-				break;
-			}
-		}
-	} catch (error) {
-		const aborted = abortController.signal.aborted === true;
-		if (aborted) {
-			throw new NodeOperationError(this.getNode(), 'Timed out waiting for task stream to reach terminal status', {
-				description: `taskId=${taskId}, lastStatus=${finalStatus}, maxWaitSeconds=${maxWaitSeconds}`,
-			});
-		}
-
-		throw error;
-	} finally {
-		runtime.clearTimeout(timeoutHandle);
-	}
-
-	if (!TERMINAL_STATUSES.has(finalStatus)) {
+	while (Date.now() - startedAt < maxWaitMs) {
 		const statusResponse = await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
 			method: 'GET',
 			url: `https://api.mobilerun.ai/v1/tasks/${taskId}/status`,
 			json: true,
 		}) as IDataObject;
 
-		const fallbackStatus = statusResponse.status;
-		if (typeof fallbackStatus === 'string' && fallbackStatus.length > 0) {
-			finalStatus = fallbackStatus;
+		const currentStatus = statusResponse.status;
+		if (typeof currentStatus === 'string' && currentStatus.length > 0) {
+			finalStatus = currentStatus;
 		}
 
-		if (!TERMINAL_STATUSES.has(finalStatus)) {
-			throw new NodeOperationError(this.getNode(), 'Task stream ended before terminal status was reached', {
-				description: `taskId=${taskId}, lastStatus=${finalStatus}, streamEvents=${streamEventCount}`,
-			});
+		if (TERMINAL_STATUSES.has(finalStatus)) {
+			break;
 		}
+
+		const elapsed = Date.now() - startedAt;
+		const remaining = maxWaitMs - elapsed;
+		if (remaining <= 0) {
+			break;
+		}
+		const sleepTime = Math.min(pollIntervalMs, remaining);
+		await sleep(sleepTime);
+	}
+
+	if (!TERMINAL_STATUSES.has(finalStatus)) {
+		throw new NodeOperationError(this.getNode(), 'Timed out waiting for task to reach terminal status', {
+			description: `taskId=${taskId}, lastStatus=${finalStatus}, maxWaitSeconds=${maxWaitSeconds}`,
+		});
 	}
 
 	const taskDetailsResponse = await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
@@ -346,10 +131,10 @@ export async function runTaskAndWaitPostReceive(
 				finalStatus,
 				isTerminal: true,
 				waitedMs: Date.now() - startedAt,
-				streamEventCount,
+				streamEventCount: 0,
 				streamUrl,
-				lastEventName,
-				lastEventPayload,
+				lastEventName: undefined,
+				lastEventPayload: undefined,
 				task: taskDetailsResponse.task ?? taskDetailsResponse,
 				rawTaskResponse: taskDetailsResponse,
 			},
