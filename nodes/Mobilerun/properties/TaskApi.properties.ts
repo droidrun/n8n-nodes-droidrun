@@ -56,7 +56,7 @@ const taskProperties: INodeProperties[] = [{
 			default: [],
 			placeholder: 'Choose App',
 			description: 'Apps configuration. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			hint: 'For manuall app selection use n8n expressions'
+			hint: 'For manual app selection use n8n expressions'
 		},
 		{
 			displayName: 'Continue on Failure',

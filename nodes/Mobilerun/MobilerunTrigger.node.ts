@@ -103,7 +103,7 @@ export class MobilerunTrigger implements INodeType {
 					}
 
 					if (response?.body?.subscribed === false) {
-						throw new ApplicationError('Mobilerun subscribe: subscription wasnt successfull.');
+						throw new ApplicationError('Mobilerun subscribe: subscription wasn\'t successful.');
 					}
 
 					this.logger.debug(`[MOBILERUN] setting hookId ${response?.body?.id}`)

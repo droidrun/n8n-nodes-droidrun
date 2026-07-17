@@ -6,11 +6,15 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
+declare module 'n8n-workflow' {
+	interface BaseHelperFunctions {
+		sleep(ms: number): Promise<void>;
+	}
+}
+
 const TERMINAL_STATUSES = new Set(['completed', 'failed', 'cancelled']);
 
-declare function setTimeout(callback: (...args: any[]) => void, ms?: number, ...args: any[]): any;
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function getDefaultTaskAttachUrl(taskId: string): string {
 	return `https://api.mobilerun.ai/v1/tasks/${taskId}/attach`;
@@ -109,7 +113,7 @@ export async function runTaskAndWaitPostReceive(
 			break;
 		}
 		const sleepTime = Math.min(pollIntervalMs, remaining);
-		await sleep(sleepTime);
+		await this.helpers.sleep(sleepTime);
 	}
 
 	if (!TERMINAL_STATUSES.has(finalStatus)) {

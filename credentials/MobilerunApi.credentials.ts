@@ -7,7 +7,7 @@ import {
 
 export class MobilerunApi implements ICredentialType {
 	name = 'mobilerunApi';
-	displayName = 'Mobilerun API';
+	displayName = 'MobileRun API';
 	documentationUrl = 'https://docs.mobilerun.ai/api-reference';
 	properties: INodeProperties[] = [
 		{
@@ -19,7 +19,7 @@ export class MobilerunApi implements ICredentialType {
 				password: true,
 			},
 			required: true,
-			description: 'Your MobileRun API Key',
+			description: 'Your MobileRun API key',
 		}
 	];
 
