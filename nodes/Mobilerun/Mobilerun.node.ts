@@ -1,5 +1,10 @@
 import { MobilerunResources } from './Mobilerun.properties';
-import { INodeType, INodeTypeDescription, NodeConnectionTypes, ILoadOptionsFunctions } from 'n8n-workflow';
+import {
+	INodeType,
+	INodeTypeDescription,
+	NodeConnectionTypes,
+	ILoadOptionsFunctions,
+} from 'n8n-workflow';
 import { version } from '../../package.json';
 
 export class Mobilerun implements INodeType {
@@ -32,16 +37,14 @@ export class Mobilerun implements INodeType {
 			json: true,
 		},
 
-		properties: [
-			...MobilerunResources()
-		],
+		properties: [...MobilerunResources()],
 	};
 
 	methods = {
 		loadOptions: {
 			async loadLlmModels(this: ILoadOptionsFunctions) {
 				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(
+					const response = (await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'mobilerunApi',
 						{
@@ -49,7 +52,7 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/models',
 							returnFullResponse: true,
 						},
-					) as { body?: { models?: Array<{ id: string }> } };
+					)) as { body?: { models?: Array<{ id: string }> } };
 
 					const models = response?.body?.models || [];
 					return models.map((model) => ({
@@ -66,14 +69,14 @@ export class Mobilerun implements INodeType {
 						{ name: 'MobileRun Mobile Agent Thinking', value: 'mobilerun/mobile-agent-thinking' },
 						{ name: 'OpenAI GPT-5.4', value: 'openai/gpt-5.4' },
 						{ name: 'OpenAI GPT-5.4 Mini', value: 'openai/gpt-5.4-mini' },
-						{ name: 'xAI Grok 4.3', value: 'x-ai/grok-4.3' }
+						{ name: 'xAI Grok 4.3', value: 'x-ai/grok-4.3' },
 					];
 				}
 			},
 
 			async loadDevices(this: ILoadOptionsFunctions) {
 				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(
+					const response = (await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'mobilerunApi',
 						{
@@ -81,12 +84,16 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/devices',
 							returnFullResponse: true,
 						},
-					) as { body?: { items?: Array<{ id: string; name?: string; type?: string; state?: string }> } };
+					)) as {
+						body?: { items?: Array<{ id: string; name?: string; type?: string; state?: string }> };
+					};
 
 					const devices = response?.body?.items || [];
 					const options = devices.map((device) => {
 						const typeStr = device.type ? ` (${device.type})` : '';
-						const name = device.name ? `${device.name}${typeStr}` : `${device.type || 'Device'} (${device.id.slice(0, 8)})`;
+						const name = device.name
+							? `${device.name}${typeStr}`
+							: `${device.type || 'Device'} (${device.id.slice(0, 8)})`;
 						return {
 							name,
 							value: device.id,
@@ -101,7 +108,7 @@ export class Mobilerun implements INodeType {
 
 			async loadApps(this: ILoadOptionsFunctions) {
 				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(
+					const response = (await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'mobilerunApi',
 						{
@@ -109,7 +116,9 @@ export class Mobilerun implements INodeType {
 							url: 'https://api.mobilerun.ai/v1/apps',
 							returnFullResponse: true,
 						},
-					) as { body?: { items?: Array<{ bundleId: string; displayName?: string; platform?: string }> } };
+					)) as {
+						body?: { items?: Array<{ bundleId: string; displayName?: string; platform?: string }> };
+					};
 
 					const apps = response?.body?.items || [];
 					return apps.map((app) => ({
@@ -121,7 +130,6 @@ export class Mobilerun implements INodeType {
 					return [];
 				}
 			},
-		}
+		},
 	};
 }
-

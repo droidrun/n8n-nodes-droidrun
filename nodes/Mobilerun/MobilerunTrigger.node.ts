@@ -1,4 +1,15 @@
-import { ApplicationError, IDataObject, IHookFunctions, INodeType, INodeTypeDescription, IWebhookFunctions, IWebhookResponseData, NodeConnectionTypes } from 'n8n-workflow';
+import {
+	ApplicationError,
+	IDataObject,
+	IHookFunctions,
+	INodeType,
+	INodeTypeDescription,
+	IWebhookFunctions,
+	IWebhookResponseData,
+	NodeConnectionTypes,
+	NodeApiError,
+	JsonObject,
+} from 'n8n-workflow';
 
 export class MobilerunTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -14,21 +25,23 @@ export class MobilerunTrigger implements INodeType {
 		},
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
+		usableAsTool: true,
 		credentials: [
 			{
 				name: 'mobilerunApi',
 				required: true,
 			},
 		],
-		webhooks: [{
-			name: 'default',
-			httpMethod: 'POST',
-			path: 'webhooks',
-			responseMode: 'onReceived'
-		}],
-
-		properties: [
+		webhooks: [
+			{
+				name: 'default',
+				httpMethod: 'POST',
+				path: 'webhooks',
+				responseMode: 'onReceived',
+			},
 		],
+
+		properties: [],
 	};
 
 	webhookMethods = {
@@ -36,30 +49,35 @@ export class MobilerunTrigger implements INodeType {
 			async checkExists(this: IHookFunctions): Promise<boolean> {
 				const staticData = this.getWorkflowStaticData('node');
 				const webhookUrl = this.getNodeWebhookUrl('default');
-				this.logger.debug("[MOBILERUN]checking if webhook exist", staticData)
+				this.logger.debug('[MOBILERUN]checking if webhook exist', staticData);
 
-				if (!staticData.hookId) return false
+				if (!staticData.hookId) return false;
 
 				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
-						method: 'GET',
-						url: `https://api.mobilerun.ai/v1/hooks/${staticData.hookId}`,
-						returnFullResponse: true,
-					}) as { body?: { id: string; url: string, status?: number } };
+					const response = (await this.helpers.httpRequestWithAuthentication.call(
+						this,
+						'mobilerunApi',
+						{
+							method: 'GET',
+							url: `https://api.mobilerun.ai/v1/hooks/${staticData.hookId}`,
+							returnFullResponse: true,
+						},
+					)) as { body?: { id: string; url: string; status?: number } };
 
-					if (response?.body?.status && response.body?.status == 409) return true
+					if (response?.body?.status && response.body?.status == 409) return true;
 
-					this.logger.debug(`[MOBILERUN]"response", ${response.body?.id} ${JSON.stringify(response)}`)
+					this.logger.debug(
+						`[MOBILERUN]"response", ${response.body?.id} ${JSON.stringify(response)}`,
+					);
 
 					return !!response?.body?.url && response.body?.url === webhookUrl;
 				} catch (e: any) {
 					const status = e?.statusCode ?? e?.response?.status;
-					this.logger.error('Error', e)
+					this.logger.error('Error', e);
 					if (status === 409) return true;
 					if (status === 404) return false;
-					throw e;
+					throw new NodeApiError(this.getNode(), e as JsonObject);
 				}
-
 			},
 
 			// Subscribe
@@ -74,7 +92,7 @@ export class MobilerunTrigger implements INodeType {
 				};
 
 				try {
-					const response = await this.helpers.httpRequestWithAuthentication.call(
+					const response = (await this.helpers.httpRequestWithAuthentication.call(
 						this,
 						'mobilerunApi',
 						{
@@ -83,18 +101,18 @@ export class MobilerunTrigger implements INodeType {
 							body,
 							returnFullResponse: true,
 						},
-					) as {
+					)) as {
 						body?: {
 							id?: string;
 							subscribed?: boolean;
 							status?: number;
-						}
+						};
 					};
 
-					this.logger.debug("creating webhook response", response)
+					this.logger.debug('creating webhook response', response);
 
 					if (response?.body?.status === 409) {
-						this.logger.debug(JSON.stringify(response))
+						this.logger.debug(JSON.stringify(response));
 						throw new ApplicationError('Mobilerun subscribe: already exists.');
 					}
 
@@ -103,19 +121,16 @@ export class MobilerunTrigger implements INodeType {
 					}
 
 					if (response?.body?.subscribed === false) {
-						throw new ApplicationError('Mobilerun subscribe: subscription wasn\'t successful.');
+						throw new ApplicationError("Mobilerun subscribe: subscription wasn't successful.");
 					}
 
-					this.logger.debug(`[MOBILERUN] setting hookId ${response?.body?.id}`)
+					this.logger.debug(`[MOBILERUN] setting hookId ${response?.body?.id}`);
 
 					staticData.hookId = response.body.id;
 					return true;
 				} catch (e: any) {
 					const status =
-						e?.statusCode ??
-						e?.response?.status ??
-						e?.context?.data?.status ??
-						Number(e?.httpCode);
+						e?.statusCode ?? e?.response?.status ?? e?.context?.data?.status ?? Number(e?.httpCode);
 
 					const detail = e?.context?.data?.detail ?? e?.response?.data?.detail;
 
@@ -123,32 +138,26 @@ export class MobilerunTrigger implements INodeType {
 						return true;
 					}
 
-					throw e;
+					throw new NodeApiError(this.getNode(), e as JsonObject);
 				}
-
 			},
 
 			// Unsubscribe
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const staticData = this.getWorkflowStaticData('node');
-				this.logger.debug(`[MOBILERUN] Deleteing webhook with id: ${staticData.hookId}`)
+				this.logger.debug(`[MOBILERUN] Deleteing webhook with id: ${staticData.hookId}`);
 
 				if (!staticData.hookId) {
 					return false;
 				}
 
 				try {
-					await this.helpers.httpRequestWithAuthentication.call(
-						this,
-						'mobilerunApi',
-						{
-							method: 'POST',
-							url: `https://api.mobilerun.ai/v1/hooks/${staticData.hookId}/unsubscribe`,
-							returnFullResponse: true,
-						},
-					);
-				} catch (error) {
-				}
+					await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
+						method: 'POST',
+						url: `https://api.mobilerun.ai/v1/hooks/${staticData.hookId}/unsubscribe`,
+						returnFullResponse: true,
+					});
+				} catch (error) {}
 
 				delete staticData.hookId;
 				return true;
@@ -158,15 +167,15 @@ export class MobilerunTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		try {
-			this.logger.debug("[MOBILERUN] Received Webhook call")
+			this.logger.debug('[MOBILERUN] Received Webhook call');
 			const bodyData = this.getBodyData();
 
 			return {
 				workflowData: [this.helpers.returnJsonArray(bodyData)],
 			};
-		} catch (error) {
-			this.logger.error("[MOBILERUN] Webhook processing error", error);
-			throw error;
+		} catch (error: any) {
+			this.logger.error('[MOBILERUN] Webhook processing error', error);
+			throw new NodeApiError(this.getNode(), error as JsonObject);
 		}
 	}
-};
+}

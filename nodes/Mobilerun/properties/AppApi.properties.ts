@@ -21,7 +21,6 @@ export const AppResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: 'apps',
-
 						},
 					},
 				},
@@ -178,9 +177,9 @@ export const AppResources = (): INodeProperties[] => {
 					paginate: true,
 					type: 'query',
 					property: 'page',
-					value: '={{ $value }}'
+					value: '={{ $value }}',
 				},
-			}
+			},
 		},
-	]
-}
+	];
+};

@@ -3,11 +3,13 @@ import {
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
+	Icon,
 } from 'n8n-workflow';
 
 export class MobilerunApi implements ICredentialType {
 	name = 'mobilerunApi';
 	displayName = 'MobileRun API';
+	icon: Icon = 'file:mobilerun-logo.svg';
 	documentationUrl = 'https://docs.mobilerun.ai/api-reference';
 	properties: INodeProperties[] = [
 		{
@@ -20,7 +22,7 @@ export class MobilerunApi implements ICredentialType {
 			},
 			required: true,
 			description: 'Your MobileRun API key',
-		}
+		},
 	];
 
 	// This allows the credential to be used by other parts of n8n

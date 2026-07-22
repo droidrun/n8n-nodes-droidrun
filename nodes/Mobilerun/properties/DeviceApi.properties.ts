@@ -25,7 +25,8 @@ export const DeviceResources = (): INodeProperties[] => {
 							body: {
 								smartIp: '={{ $parameter.smartIp }}',
 								name: '={{ $parameter.proxyMode === "preconfigured" ? $parameter.proxyName : undefined }}',
-								socks5: '={{ $parameter.proxyMode === "socks5" ? { host: $parameter.proxyHost, port: $parameter.proxyPort, user: $parameter.proxyUser || undefined, password: $parameter.proxyPassword || undefined } : undefined }}',
+								socks5:
+									'={{ $parameter.proxyMode === "socks5" ? { host: $parameter.proxyHost, port: $parameter.proxyPort, user: $parameter.proxyUser || undefined, password: $parameter.proxyPassword || undefined } : undefined }}',
 							},
 						},
 					},
@@ -81,7 +82,8 @@ export const DeviceResources = (): INodeProperties[] => {
 				{
 					name: 'List Devices',
 					value: 'listDevices',
-					description: 'Retrieves a paginated list of devices with filtering and search capabilities',
+					description:
+						'Retrieves a paginated list of devices with filtering and search capabilities',
 					action: 'List devices',
 					routing: {
 						request: {
@@ -425,7 +427,14 @@ export const DeviceResources = (): INodeProperties[] => {
 			displayOptions: {
 				show: {
 					resource: ['device'],
-					operation: ['getDevice', 'deleteDevice', 'getDeviceTasks', 'waitForDevice', 'connectProxy', 'disconnectProxy'],
+					operation: [
+						'getDevice',
+						'deleteDevice',
+						'getDeviceTasks',
+						'waitForDevice',
+						'connectProxy',
+						'disconnectProxy',
+					],
 				},
 			},
 		},

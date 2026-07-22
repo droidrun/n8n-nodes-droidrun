@@ -1,238 +1,243 @@
 import { INodeProperties } from 'n8n-workflow';
 import { runTaskAndWaitPostReceive } from '../behaviors/RunTaskAndWait.behavior';
 
-const taskProperties: INodeProperties[] = [{
-	displayName: 'Task',
-	name: 'task',
-	type: 'string',
-	typeOptions: {
-		rows: 4,
-	},
-	default: '',
-	required: true,
-	description: 'Task to run',
-	placeholder: 'Enter Task',
-},
-{
-	displayName: 'LLM Model Name or ID',
-	name: 'llmModel',
-	type: 'options',
-	default: '',
-	typeOptions: {
-		loadOptionsMethod: 'loadLlmModels'
-	},
-	description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-},
-{
-	displayName: 'Options',
-	name: 'options',
-	type: 'collection',
-	placeholder: 'Add Option',
-	default: {},
-	options: [
-		{
-			displayName: 'Accessibility',
-			name: 'accessibility',
-			type: 'boolean',
-			default: true,
-			description: 'Whether to enable Android accessibility actions (clicks, inputs) on the device',
+const taskProperties: INodeProperties[] = [
+	{
+		displayName: 'Task',
+		name: 'task',
+		type: 'string',
+		typeOptions: {
+			rows: 4,
 		},
-		{
-			displayName: 'Agent ID',
-			name: 'agentId',
-			type: 'number',
-			default: 0,
-			description: 'The ID of the agent configuration to run',
+		default: '',
+		required: true,
+		description: 'Task to run',
+		placeholder: 'Enter Task',
+	},
+	{
+		displayName: 'LLM Model Name or ID',
+		name: 'llmModel',
+		type: 'options',
+		default: '',
+		typeOptions: {
+			loadOptionsMethod: 'loadLlmModels',
 		},
-		{
-			displayName: 'App Names or IDs',
-			name: 'apps',
-			type: 'multiOptions',
-			allowArbitraryValues: true,
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		options: [
+			{
+				displayName: 'Accessibility',
+				name: 'accessibility',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to enable Android accessibility actions (clicks, inputs) on the device',
+			},
+			{
+				displayName: 'Agent ID',
+				name: 'agentId',
+				type: 'number',
+				default: 0,
+				description: 'The ID of the agent configuration to run',
+			},
+			{
+				displayName: 'App Names or IDs',
+				name: 'apps',
+				type: 'multiOptions',
+				allowArbitraryValues: true,
 
-			typeOptions: {
-				loadOptionsMethod: 'loadApps',
-			},
-			default: [],
-			placeholder: 'Choose App',
-			description: 'Apps configuration. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-			hint: 'For manual app selection use n8n expressions'
-		},
-		{
-			displayName: 'Continue on Failure',
-			name: 'continueOnFailure',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to attempt recovery workflows when a step fails',
-		},
-		{
-			displayName: 'Credentials',
-			name: 'credentials',
-			type: 'fixedCollection',
-			typeOptions: {
-				multipleValues: true,
-			},
-			default: {},
-			placeholder: 'Add Credential',
-			options: [
-				{
-					name: 'credentialValues',
-					displayName: 'Credential',
-					values: [
-						{
-							displayName: 'Package Name',
-							name: 'packageName',
-							type: 'string',
-							default: '',
-							required: true,
-							description: 'Name of the package',
-						},
-						{
-							displayName: 'Credential Names',
-							name: 'credentialNames',
-							type: 'string',
-							typeOptions: {
-								multipleValues: true,
-							},
-							default: [],
-							required: true,
-							description: 'List of credential names for this package',
-						},
-					],
+				typeOptions: {
+					loadOptionsMethod: 'loadApps',
 				},
-			],
-			description: 'Package credentials configuration',
-		},
-		{
-			displayName: 'Display ID',
-			name: 'displayId',
-			type: 'number',
-			default: 0,
-			description: 'The display ID of the device to run the task on',
-		},
-		{
-			displayName: 'Execution Timeout',
-			name: 'executionTimeout',
-			type: 'number',
-			default: 1000,
-			description: 'Timeout for task execution in seconds',
-		},
-		{
-			displayName: 'Files',
-			name: 'files',
-			type: 'string',
-			typeOptions: {
-				multipleValues: true,
+				default: [],
+				placeholder: 'Choose App',
+				description:
+					'Apps configuration. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+				hint: 'For manual app selection use n8n expressions',
 			},
-			default: [],
-			description: 'List of files to be used in the task',
-		},
-		{
-			displayName: 'Max Steps',
-			name: 'maxSteps',
-			type: 'number',
-			default: 100,
-			description: 'Maximum number of steps for task execution',
-		},
-		{
-			displayName: 'Memory Namespace',
-			name: 'memoryNamespace',
-			type: 'string',
-			default: 'default',
-			description: 'Memory namespace for cross task personalization',
-		},
-		{
-			displayName: 'Output Schema',
-			name: 'outputSchema',
-			type: 'json',
-			typeOptions: {
-				rows: 10,
+			{
+				displayName: 'Continue on Failure',
+				name: 'continueOnFailure',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to attempt recovery workflows when a step fails',
 			},
-			default: '{\n  "type": "object",\n  "properties": {\n    "response": {\n      "type": "string",\n      "description": "The response text"\n    }\n  },\n  "required": ["response"],\n  "additionalProperties": false\n}',
-			description: 'JSON Schema that defines the structure of the AI response',
-
-		},
-		{
-			displayName: 'Reasoning',
-			name: 'reasoning',
-			type: 'boolean',
-			default: true,
-			description: 'Whether to enable reasoning mode',
-		},
-		{
-			displayName: 'Stealth',
-			name: 'stealth',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to enable stealth interaction mode to mimic human touch profiles',
-		},
-		{
-			displayName: 'Subagent Model Name or ID',
-			name: 'subagentModel',
-			type: 'options',
-			allowArbitraryValues: true,
-			typeOptions: {
-				loadOptionsMethod: 'loadLlmModels',
+			{
+				displayName: 'Credentials',
+				name: 'credentials',
+				type: 'fixedCollection',
+				typeOptions: {
+					multipleValues: true,
+				},
+				default: {},
+				placeholder: 'Add Credential',
+				options: [
+					{
+						name: 'credentialValues',
+						displayName: 'Credential',
+						values: [
+							{
+								displayName: 'Package Name',
+								name: 'packageName',
+								type: 'string',
+								default: '',
+								required: true,
+								description: 'Name of the package',
+							},
+							{
+								displayName: 'Credential Names',
+								name: 'credentialNames',
+								type: 'string',
+								typeOptions: {
+									multipleValues: true,
+								},
+								default: [],
+								required: true,
+								description: 'List of credential names for this package',
+							},
+						],
+					},
+				],
+				description: 'Package credentials configuration',
 			},
-			default: '',
-			description: 'LLM model used by sub-agent roles: executor, app opener, structured output. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
-		},
-		{
-			displayName: 'Temperature',
-			name: 'temperature',
-			type: 'number',
-			typeOptions: {
-				minValue: 0,
-				maxValue: 2,
-				numberPrecision: 1,
+			{
+				displayName: 'Display ID',
+				name: 'displayId',
+				type: 'number',
+				default: 0,
+				description: 'The display ID of the device to run the task on',
 			},
-			default: 0.5,
-			description: 'Controls randomness in the output. Lower values make output more focused and deterministic.',
-		},
-		{
-			displayName: 'Vision',
-			name: 'vision',
-			type: 'boolean',
-			default: false,
-			description: 'Whether to enable vision capabilities',
-		},
-		{
-			displayName: 'VPN Country',
-			name: 'vpnCountry',
-			type: 'options',
-			options: [
-				{ name: 'Brazil', value: 'BR' },
-				{ name: 'France', value: 'FR' },
-				{ name: 'Germany', value: 'DE' },
-				{ name: 'India', value: 'IN' },
-				{ name: 'Japan', value: 'JP' },
-				{ name: 'South Africa', value: 'ZA' },
-				{ name: 'South Korea', value: 'KR' },
-				{ name: 'United States', value: 'US' },
-			],
-			default: 'DE',
-			description: 'VPN country to use for the task',
-		},
-	],
-},
-]
+			{
+				displayName: 'Execution Timeout',
+				name: 'executionTimeout',
+				type: 'number',
+				default: 1000,
+				description: 'Timeout for task execution in seconds',
+			},
+			{
+				displayName: 'Files',
+				name: 'files',
+				type: 'string',
+				typeOptions: {
+					multipleValues: true,
+				},
+				default: [],
+				description: 'List of files to be used in the task',
+			},
+			{
+				displayName: 'Max Steps',
+				name: 'maxSteps',
+				type: 'number',
+				default: 100,
+				description: 'Maximum number of steps for task execution',
+			},
+			{
+				displayName: 'Memory Namespace',
+				name: 'memoryNamespace',
+				type: 'string',
+				default: 'default',
+				description: 'Memory namespace for cross task personalization',
+			},
+			{
+				displayName: 'Output Schema',
+				name: 'outputSchema',
+				type: 'json',
+				typeOptions: {
+					rows: 10,
+				},
+				default:
+					'{\n  "type": "object",\n  "properties": {\n    "response": {\n      "type": "string",\n      "description": "The response text"\n    }\n  },\n  "required": ["response"],\n  "additionalProperties": false\n}',
+				description: 'JSON Schema that defines the structure of the AI response',
+			},
+			{
+				displayName: 'Reasoning',
+				name: 'reasoning',
+				type: 'boolean',
+				default: true,
+				description: 'Whether to enable reasoning mode',
+			},
+			{
+				displayName: 'Stealth',
+				name: 'stealth',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to enable stealth interaction mode to mimic human touch profiles',
+			},
+			{
+				displayName: 'Subagent Model Name or ID',
+				name: 'subagentModel',
+				type: 'options',
+				allowArbitraryValues: true,
+				typeOptions: {
+					loadOptionsMethod: 'loadLlmModels',
+				},
+				default: '',
+				description:
+					'LLM model used by sub-agent roles: executor, app opener, structured output. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			},
+			{
+				displayName: 'Temperature',
+				name: 'temperature',
+				type: 'number',
+				typeOptions: {
+					minValue: 0,
+					maxValue: 2,
+					numberPrecision: 1,
+				},
+				default: 0.5,
+				description:
+					'Controls randomness in the output. Lower values make output more focused and deterministic.',
+			},
+			{
+				displayName: 'Vision',
+				name: 'vision',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to enable vision capabilities',
+			},
+			{
+				displayName: 'VPN Country',
+				name: 'vpnCountry',
+				type: 'options',
+				options: [
+					{ name: 'Brazil', value: 'BR' },
+					{ name: 'France', value: 'FR' },
+					{ name: 'Germany', value: 'DE' },
+					{ name: 'India', value: 'IN' },
+					{ name: 'Japan', value: 'JP' },
+					{ name: 'South Africa', value: 'ZA' },
+					{ name: 'South Korea', value: 'KR' },
+					{ name: 'United States', value: 'US' },
+				],
+				default: 'DE',
+				description: 'VPN country to use for the task',
+			},
+		],
+	},
+];
 
 export const getTaskResourceForOperation = (operation?: string): INodeProperties[] => {
-	return taskProperties.map(task => ({
+	return taskProperties.map((task) => ({
 		...task,
 		displayOptions: {
 			...task.displayOptions,
 			show: {
 				...task.displayOptions?.show,
-				operation: [operation]
-			}
-		}
-	}))
-}
+				operation: [operation],
+			},
+		},
+	}));
+};
 
 export const TaskResources = (): INodeProperties[] => {
 	return [
-
 		/*
 				INSPECT TASK OPERATIONS
 		*/
@@ -375,25 +380,38 @@ export const TaskResources = (): INodeProperties[] => {
 							method: 'POST',
 							url: 'tasks',
 							body: {
-								accessibility: '={{ $parameter.options?.accessibility !== undefined && $parameter.options.accessibility !== null ? $parameter.options.accessibility : undefined }}',
-								agentId: '={{ $parameter.options?.agentId !== undefined && $parameter.options.agentId !== null ? $parameter.options.agentId : undefined }}',
+								accessibility:
+									'={{ $parameter.options?.accessibility !== undefined && $parameter.options.accessibility !== null ? $parameter.options.accessibility : undefined }}',
+								agentId:
+									'={{ $parameter.options?.agentId !== undefined && $parameter.options.agentId !== null ? $parameter.options.agentId : undefined }}',
 								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
-								continueOnFailure: '={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
-								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
+								continueOnFailure:
+									'={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
+								credentials:
+									'={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
 								deviceId: '={{ $parameter.deviceId }}',
-								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
-								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
-								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
+								displayId:
+									'={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
+								executionTimeout:
+									'={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
+								files:
+									'={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
 								llmModel: '={{ $parameter.llmModel }}',
-								maxSteps: '={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
+								maxSteps:
+									'={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
 								memoryNamespace: '={{ $parameter.options?.memoryNamespace || undefined }}',
-								outputSchema: '={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
-								reasoning: '={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
-								stealth: '={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
+								outputSchema:
+									'={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
+								reasoning:
+									'={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
+								stealth:
+									'={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
 								subagentModel: '={{ $parameter.options?.subagentModel || undefined }}',
 								task: '={{ $parameter.task }}',
-								temperature: '={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
-								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
+								temperature:
+									'={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
+								vision:
+									'={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
 								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
 							},
 						},
@@ -410,25 +428,38 @@ export const TaskResources = (): INodeProperties[] => {
 							url: 'tasks',
 							returnFullResponse: true,
 							body: {
-								accessibility: '={{ $parameter.options?.accessibility !== undefined && $parameter.options.accessibility !== null ? $parameter.options.accessibility : undefined }}',
-								agentId: '={{ $parameter.options?.agentId !== undefined && $parameter.options.agentId !== null ? $parameter.options.agentId : undefined }}',
+								accessibility:
+									'={{ $parameter.options?.accessibility !== undefined && $parameter.options.accessibility !== null ? $parameter.options.accessibility : undefined }}',
+								agentId:
+									'={{ $parameter.options?.agentId !== undefined && $parameter.options.agentId !== null ? $parameter.options.agentId : undefined }}',
 								apps: '={{ $parameter.options?.apps?.length ? $parameter.options.apps : undefined }}',
-								continueOnFailure: '={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
-								credentials: '={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
+								continueOnFailure:
+									'={{ $parameter.options?.continueOnFailure !== undefined && $parameter.options.continueOnFailure !== null ? $parameter.options.continueOnFailure : undefined }}',
+								credentials:
+									'={{ $parameter.options?.credentials?.credentialValues?.length ? $parameter.options.credentials.credentialValues : undefined }}',
 								deviceId: '={{ $parameter.deviceId }}',
-								displayId: '={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
-								executionTimeout: '={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
-								files: '={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
+								displayId:
+									'={{ $parameter.options?.displayId !== undefined && $parameter.options.displayId !== null ? $parameter.options.displayId : undefined }}',
+								executionTimeout:
+									'={{ $parameter.options?.executionTimeout !== undefined && $parameter.options.executionTimeout !== null ? $parameter.options.executionTimeout : undefined }}',
+								files:
+									'={{ $parameter.options?.files?.length ? $parameter.options.files : undefined }}',
 								llmModel: '={{ $parameter.llmModel }}',
-								maxSteps: '={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
+								maxSteps:
+									'={{ $parameter.options?.maxSteps !== undefined && $parameter.options.maxSteps !== null ? $parameter.options.maxSteps : undefined }}',
 								memoryNamespace: '={{ $parameter.options?.memoryNamespace || undefined }}',
-								outputSchema: '={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
-								reasoning: '={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
-								stealth: '={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
+								outputSchema:
+									'={{ $parameter.options?.outputSchema ? JSON.parse($parameter.options.outputSchema) : undefined }}',
+								reasoning:
+									'={{ $parameter.options?.reasoning !== undefined && $parameter.options.reasoning !== null ? $parameter.options.reasoning : undefined }}',
+								stealth:
+									'={{ $parameter.options?.stealth !== undefined && $parameter.options.stealth !== null ? $parameter.options.stealth : undefined }}',
 								subagentModel: '={{ $parameter.options?.subagentModel || undefined }}',
 								task: '={{ $parameter.task }}',
-								temperature: '={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
-								vision: '={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
+								temperature:
+									'={{ $parameter.options?.temperature !== undefined && $parameter.options.temperature !== null ? $parameter.options.temperature : undefined }}',
+								vision:
+									'={{ $parameter.options?.vision !== undefined && $parameter.options.vision !== null ? $parameter.options.vision : undefined }}',
 								vpnCountry: '={{ $parameter.options?.vpnCountry || undefined }}',
 							},
 						},
@@ -593,7 +624,16 @@ export const TaskResources = (): INodeProperties[] => {
 			placeholder: 'Enter Task ID',
 			displayOptions: {
 				show: {
-					operation: ['getTask', 'getTaskStatus', 'getTaskScreenshot', 'getTaskScreenshots', 'getTaskTrajectory', 'getTaskUIState', 'getTaskUIStates', 'stopTask'],
+					operation: [
+						'getTask',
+						'getTaskStatus',
+						'getTaskScreenshot',
+						'getTaskScreenshots',
+						'getTaskTrajectory',
+						'getTaskUIState',
+						'getTaskUIStates',
+						'stopTask',
+					],
 				},
 			},
 		},
@@ -620,15 +660,16 @@ export const TaskResources = (): INodeProperties[] => {
 			type: 'options',
 			allowArbitraryValues: true,
 			typeOptions: {
-				loadOptionsMethod: 'loadDevices'
+				loadOptionsMethod: 'loadDevices',
 			},
 			default: '',
 			required: true,
-			description: 'Device ID is required. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+			description:
+				'Device ID is required. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			hint: 'for manual device selection use n8n expressions',
 			displayOptions: {
 				show: {
-						operation: ['runTask', 'runTaskAndWait'],
+					operation: ['runTask', 'runTaskAndWait'],
 				},
 			},
 		},
@@ -651,5 +692,5 @@ export const TaskResources = (): INodeProperties[] => {
 
 		...getTaskResourceForOperation('runTask'),
 		...getTaskResourceForOperation('runTaskAndWait'),
-	]
-}
+	];
+};

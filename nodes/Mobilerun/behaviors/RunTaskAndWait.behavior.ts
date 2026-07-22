@@ -14,8 +14,6 @@ declare module 'n8n-workflow' {
 
 const TERMINAL_STATUSES = new Set(['completed', 'failed', 'cancelled']);
 
-
-
 function getDefaultTaskAttachUrl(taskId: string): string {
 	return `https://api.mobilerun.ai/v1/tasks/${taskId}/attach`;
 }
@@ -92,11 +90,15 @@ export async function runTaskAndWaitPostReceive(
 	const maxWaitMs = maxWaitSeconds * 1000;
 
 	while (Date.now() - startedAt < maxWaitMs) {
-		const statusResponse = await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
-			method: 'GET',
-			url: `https://api.mobilerun.ai/v1/tasks/${taskId}/status`,
-			json: true,
-		}) as IDataObject;
+		const statusResponse = (await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'mobilerunApi',
+			{
+				method: 'GET',
+				url: `https://api.mobilerun.ai/v1/tasks/${taskId}/status`,
+				json: true,
+			},
+		)) as IDataObject;
 
 		const currentStatus = statusResponse.status;
 		if (typeof currentStatus === 'string' && currentStatus.length > 0) {
@@ -117,16 +119,24 @@ export async function runTaskAndWaitPostReceive(
 	}
 
 	if (!TERMINAL_STATUSES.has(finalStatus)) {
-		throw new NodeOperationError(this.getNode(), 'Timed out waiting for task to reach terminal status', {
-			description: `taskId=${taskId}, lastStatus=${finalStatus}, maxWaitSeconds=${maxWaitSeconds}`,
-		});
+		throw new NodeOperationError(
+			this.getNode(),
+			'Timed out waiting for task to reach terminal status',
+			{
+				description: `taskId=${taskId}, lastStatus=${finalStatus}, maxWaitSeconds=${maxWaitSeconds}`,
+			},
+		);
 	}
 
-	const taskDetailsResponse = await this.helpers.httpRequestWithAuthentication.call(this, 'mobilerunApi', {
-		method: 'GET',
-		url: `https://api.mobilerun.ai/v1/tasks/${taskId}`,
-		json: true,
-	}) as IDataObject;
+	const taskDetailsResponse = (await this.helpers.httpRequestWithAuthentication.call(
+		this,
+		'mobilerunApi',
+		{
+			method: 'GET',
+			url: `https://api.mobilerun.ai/v1/tasks/${taskId}`,
+			json: true,
+		},
+	)) as IDataObject;
 
 	return [
 		{

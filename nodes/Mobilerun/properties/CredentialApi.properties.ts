@@ -23,8 +23,8 @@ export const CredentialResources = (): INodeProperties[] => {
 							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields" }}',
 							body: {
 								fieldType: '={{ $parameter.credentialType }}',
-								value: '={{ $parameter.credentialValue }}'
-							}
+								value: '={{ $parameter.credentialValue }}',
+							},
 						},
 					},
 				},
@@ -39,8 +39,9 @@ export const CredentialResources = (): INodeProperties[] => {
 							url: '={{ "credentials/packages/" + $parameter.packageName }}',
 							body: {
 								credentialName: '={{ $parameter.credentialName }}',
-								fields: '={{ [{ fieldType: $parameter.credentialType, value: $parameter.credentialValue }] }}',
-							}
+								fields:
+									'={{ [{ fieldType: $parameter.credentialType, value: $parameter.credentialValue }] }}',
+							},
 						},
 					},
 				},
@@ -77,7 +78,6 @@ export const CredentialResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName }}',
-
 						},
 					},
 				},
@@ -91,8 +91,8 @@ export const CredentialResources = (): INodeProperties[] => {
 							method: 'POST',
 							url: 'credentials/packages',
 							body: {
-								packageName: '={{ $parameter.packageName }}'
-							}
+								packageName: '={{ $parameter.packageName }}',
+							},
 						},
 					},
 				},
@@ -105,7 +105,6 @@ export const CredentialResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: 'credentials',
-
 						},
 					},
 				},
@@ -118,7 +117,6 @@ export const CredentialResources = (): INodeProperties[] => {
 						request: {
 							method: 'GET',
 							url: '={{ "credentials/packages/" + $parameter.packageName }}',
-
 						},
 					},
 				},
@@ -132,8 +130,8 @@ export const CredentialResources = (): INodeProperties[] => {
 							method: 'PATCH',
 							url: '={{ "credentials/packages/" + $parameter.packageName + "/credentials/" + $parameter.credentialName + "/fields/" + $parameter.credentialType }}',
 							body: {
-								value: '={{ $parameter.credentialValue }}'
-							}
+								value: '={{ $parameter.credentialValue }}',
+							},
 						},
 					},
 				},
@@ -151,7 +149,16 @@ export const CredentialResources = (): INodeProperties[] => {
 			placeholder: 'Enter Package Name',
 			displayOptions: {
 				show: {
-					operation: ['listPackageCredentials', 'initializePackage', 'createCredentialField', 'getSpecificCredential', 'deleteSpecificCredentialField', 'deleteSpecificCredential', 'updateSpecificCredentialField', 'addCredentialField'],
+					operation: [
+						'listPackageCredentials',
+						'initializePackage',
+						'createCredentialField',
+						'getSpecificCredential',
+						'deleteSpecificCredentialField',
+						'deleteSpecificCredential',
+						'updateSpecificCredentialField',
+						'addCredentialField',
+					],
 				},
 			},
 		},
@@ -166,7 +173,14 @@ export const CredentialResources = (): INodeProperties[] => {
 			placeholder: 'Enter Credential Name',
 			displayOptions: {
 				show: {
-					operation: ['createCredentialField', 'getSpecificCredential', 'deleteSpecificCredential', 'deleteSpecificCredentialField', 'updateSpecificCredentialField', 'addCredentialField'],
+					operation: [
+						'createCredentialField',
+						'getSpecificCredential',
+						'deleteSpecificCredential',
+						'deleteSpecificCredentialField',
+						'updateSpecificCredentialField',
+						'addCredentialField',
+					],
 				},
 			},
 		},
@@ -190,7 +204,12 @@ export const CredentialResources = (): INodeProperties[] => {
 			placeholder: 'Enter Credential Type',
 			displayOptions: {
 				show: {
-					operation: ['createCredentialField', 'deleteSpecificCredentialField', 'updateSpecificCredentialField', 'addCredentialField'],
+					operation: [
+						'createCredentialField',
+						'deleteSpecificCredentialField',
+						'updateSpecificCredentialField',
+						'addCredentialField',
+					],
 				},
 			},
 		},
@@ -205,10 +224,13 @@ export const CredentialResources = (): INodeProperties[] => {
 			placeholder: 'Enter Credential Value',
 			displayOptions: {
 				show: {
-					operation: ['createCredentialField', 'updateSpecificCredentialField', 'addCredentialField'],
+					operation: [
+						'createCredentialField',
+						'updateSpecificCredentialField',
+						'addCredentialField',
+					],
 				},
 			},
 		},
-	]
-
-}
+	];
+};

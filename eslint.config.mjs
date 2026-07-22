@@ -1,9 +1,11 @@
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import n8nNodesBase from 'eslint-plugin-n8n-nodes-base';
+import { n8nCommunityNodesPlugin } from '@n8n/eslint-plugin-community-nodes';
 import jsoncParser from 'jsonc-eslint-parser';
 
 export default tseslint.config(
+	n8nCommunityNodesPlugin.configs.recommended,
 	// Global ignores
 	{
 		ignores: ['**/*.js', '**/node_modules/**', '**/dist/**', 'eslint.config.mjs'],

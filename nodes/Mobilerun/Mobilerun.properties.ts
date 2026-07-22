@@ -24,5 +24,5 @@ export const MobilerunResources = (): INodeProperties[] => {
 		...AppResources(),
 		...CredentialResources(),
 		...DeviceResources(),
-	]
-}
+	];
+};
