@@ -1,4 +1,4 @@
-# n8n-nodes-droidrun
+# @mobilerun/n8n-nodes-mobilerun
 
 This is an n8n community node that lets you use MobileRun in your n8n workflows to automate tasks on Android devices via the MobileRun Cloud API.
 
@@ -13,6 +13,10 @@ This is an n8n community node that lets you use MobileRun in your n8n workflows 
 - [Version history](#version-history)
 
 ## Installation
+
+```bash
+npm i @mobilerun/n8n-nodes-mobilerun
+```
 
 Follow the n8n community nodes [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/).
 
