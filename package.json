@@ -1,6 +1,6 @@
 {
 	"name": "@mobilerun/n8n-nodes-mobilerun",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "n8n community node for integrating MobileRun with workflows.",
 	"keywords": [
 		"n8n-community-node-package",
@@ -23,7 +23,7 @@
 	"homepage": "https://mobilerun.ai/",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/mobilerun/n8n-nodes-mobilerun"
+		"url": "https://github.com/droidrun/n8n-nodes-droidrun"
 	},
 	"engines": {
 		"node": ">=20.15"
