@@ -104,7 +104,7 @@ Use npm for this repository. `package-lock.json` is the authoritative lockfile,
 matching the release workflow.
 
 ```sh
-npm ci
+npm ci --ignore-scripts
 npm run build
 npm run lint
 npm audit --audit-level=high
@@ -113,3 +113,7 @@ npm pack --dry-run
 
 Pull requests run these checks before release. Regenerate and commit the npm
 lockfile when updating dependencies.
+
+Security overrides retain the existing dependency major versions while selecting
+patched transitive packages. The n8n workflow development version matches the
+existing node API; consumers continue to provide their own peer dependency.

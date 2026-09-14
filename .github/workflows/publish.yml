@@ -19,7 +19,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "npm"
 
-      - run: npm ci --audit=false --fund=false
+      - run: npm ci --ignore-scripts --audit=false --fund=false
 
       # publish (triggert prepublishOnly: build + lint)
       - run: npm publish --provenance --access public
