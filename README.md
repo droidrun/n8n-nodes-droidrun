@@ -97,3 +97,19 @@ Reference: `https://docs.mobilerun.ai/api-reference/`
 ## Version history
 
 - 1.0.3: Initial public release of the Tasks node
+
+## Development checks
+
+Use npm for this repository. `package-lock.json` is the authoritative lockfile,
+matching the release workflow.
+
+```sh
+npm ci
+npm run build
+npm run lint
+npm audit --audit-level=high
+npm pack --dry-run
+```
+
+Pull requests run these checks before release. Regenerate and commit the npm
+lockfile when updating dependencies.

@@ -56,6 +56,7 @@
 		]
 	},
 	"devDependencies": {
+		"@n8n/eslint-plugin-community-nodes": "^0.7.0",
 		"@n8n/node-cli": "*",
 		"@typescript-eslint/parser": "~8.32.0",
 		"eslint": "^9.39.2",
