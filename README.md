@@ -29,6 +29,7 @@ This node exposes the following resources and operations:
 
 ### Device
 - **Connect Proxy**: Connect a proxy to the device.
+- **Create Device**: Provision a new device. Choose the device type, country, profile and billing mode, and optionally set name, Android version, locale, timezone, apps, files, location, carrier, identifiers and proxy.
 - **Delete Device**: Delete a specific device.
 - **Disconnect Proxy**: Disconnect the proxy from the device.
 - **Get Device**: Get details of a specific device.

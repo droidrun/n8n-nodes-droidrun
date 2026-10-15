@@ -85,12 +85,21 @@ export class Mobilerun implements INodeType {
 							returnFullResponse: true,
 						},
 					)) as {
-						body?: { items?: Array<{ id: string; name?: string; type?: string; state?: string }> };
+						body?: {
+							items?: Array<{
+								id: string;
+								name?: string;
+								type?: string;
+								platform?: string;
+								state?: string;
+							}> | null;
+						};
 					};
 
 					const devices = response?.body?.items || [];
 					const options = devices.map((device) => {
-						const typeStr = device.type ? ` (${device.type})` : '';
+						const details = [device.type, device.platform].filter(Boolean).join(', ');
+						const typeStr = details ? ` (${details})` : '';
 						const name = device.name
 							? `${device.name}${typeStr}`
 							: `${device.type || 'Device'} (${device.id.slice(0, 8)})`;
