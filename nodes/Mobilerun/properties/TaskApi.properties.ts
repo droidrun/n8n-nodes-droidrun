@@ -18,7 +18,9 @@ const taskProperties: INodeProperties[] = [
 		displayName: 'LLM Model Name or ID',
 		name: 'llmModel',
 		type: 'options',
-		default: '',
+		// Preselect a recommended model instead of leaving the dropdown empty
+		// eslint-disable-next-line n8n-nodes-base/node-param-default-wrong-for-options
+		default: 'openai/gpt-6-luna',
 		typeOptions: {
 			loadOptionsMethod: 'loadLlmModels',
 		},
